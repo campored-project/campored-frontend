@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Directo — Mercado local sin intermediarios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F3F1E8;
+    --card:#FBFAF6;
+    --ink:#24291F;
+    --ink-soft:#5B5C4C;
+    --ink-faint:#8B8B78;
+    --line:#D7D1BC;
+    --line-strong:#B9B29A;
+    --accent:#6E4425;
+    --accent-dark:#4E3019;
+    --font-display:'Fraunces',serif;
+    --font-body:'Archivo',sans-serif;
+    --font-mono:'IBM Plex Mono',monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-body);-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+  a{color:inherit;}
+
+  header.nav{border-bottom:1px solid var(--line);}
+  .nav-row{display:flex;align-items:center;justify-content:space-between;padding:20px 0;flex-wrap:wrap;gap:14px;}
+  .brand{display:flex;align-items:baseline;gap:10px;}
+  .brand h1{font-family:var(--font-display);font-weight:600;font-size:23px;margin:0;letter-spacing:-0.01em;}
+  .brand span{font-family:var(--font-mono);font-size:10.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.08em;}
+  .nav-links{display:flex;align-items:center;gap:26px;font-size:14px;color:var(--ink-soft);}
+  .nav-links a{text-decoration:none;}
+  .nav-cta{border:1px solid var(--ink);border-radius:4px;padding:8px 16px;font-family:var(--font-mono);font-size:12.5px;background:var(--card);cursor:pointer;}
+
+  .hero{padding:64px 0 48px;border-bottom:1px solid var(--line);}
+  .eyebrow{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--accent-dark);margin-bottom:18px;}
+  .hero h2{font-family:var(--font-display);font-weight:500;font-size:52px;line-height:1.06;margin:0 0 22px;letter-spacing:-0.015em;max-width:760px;}
+  .hero p.sub{font-size:16.5px;line-height:1.6;color:var(--ink-soft);max-width:520px;margin:0 0 32px;}
+  .hero-ctas{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:56px;}
+  .btn-primary{background:var(--ink);color:var(--paper);border:1px solid var(--ink);border-radius:4px;padding:12px 20px;font-family:var(--font-mono);font-size:13px;cursor:pointer;}
+  .btn-secondary{background:transparent;color:var(--ink);border:1px solid var(--line-strong);border-radius:4px;padding:12px 20px;font-family:var(--font-mono);font-size:13px;cursor:pointer;}
+
+  .chain{border:1px solid var(--line);background:var(--card);border-radius:6px;padding:26px 28px;}
+  .chain-label{font-family:var(--font-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-faint);margin-bottom:16px;}
+  .chain-row{display:flex;align-items:center;flex-wrap:wrap;gap:0;}
+  .node{font-family:var(--font-mono);font-size:13px;padding:7px 13px;border:1px solid var(--line-strong);border-radius:100px;color:var(--ink-soft);background:var(--paper);white-space:nowrap;}
+  .node.end{color:var(--ink);border-color:var(--ink);}
+  .arrow{font-family:var(--font-mono);color:var(--ink-faint);padding:0 8px;font-size:13px;}
+  .chain-row.before{margin-bottom:18px;}
+  .chain-row.after .node.end{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+  .chain-row.after .arrow{color:var(--accent-dark);}
+  .chain-note{font-size:12.5px;color:var(--ink-faint);margin-top:16px;}
+
+  .stats{font-family:var(--font-mono);font-size:12.5px;color:var(--ink-soft);padding:16px 0;border-bottom:1px solid var(--line);letter-spacing:.02em;}
+
+  .steps{padding:56px 0;border-bottom:1px solid var(--line);}
+  .section-head{font-family:var(--font-display);font-size:24px;font-weight:500;margin:0 0 34px;}
+  .steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;}
+  .step{border-top:1px solid var(--line-strong);padding-top:16px;}
+  .step .n{font-family:var(--font-mono);font-size:12px;color:var(--accent-dark);margin-bottom:10px;}
+  .step h3{font-family:var(--font-display);font-size:18px;font-weight:500;margin:0 0 8px;}
+  .step p{font-size:13.5px;color:var(--ink-soft);line-height:1.6;margin:0;}
+
+  .categories{padding:56px 0;border-bottom:1px solid var(--line);}
+  .cat-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;}
+  .cat-card{border:1px solid var(--line);background:var(--card);border-radius:6px;padding:16px 14px;text-align:left;}
+  .cat-card .k{font-family:var(--font-mono);font-size:10.5px;color:var(--ink-faint);}
+  .cat-card .name{font-family:var(--font-display);font-size:15.5px;margin-top:6px;}
+
+  .quotes{padding:56px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr;gap:36px;}
+  .quote p{font-family:var(--font-display);font-style:italic;font-size:19px;line-height:1.5;margin:0 0 14px;}
+  .quote span{font-family:var(--font-mono);font-size:11.5px;color:var(--ink-faint);}
+
+  footer{padding:44px 0 60px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px;}
+  footer .fbrand{font-family:var(--font-display);font-size:19px;}
+  footer .municipios{font-family:var(--font-mono);font-size:11.5px;color:var(--ink-faint);max-width:420px;line-height:1.8;}
+
+  @media (max-width:820px){
+    .wrap{padding:0 18px;}
+    .hero h2{font-size:36px;}
+    .steps-grid{grid-template-columns:1fr;gap:22px;}
+    .cat-grid{grid-template-columns:repeat(3,1fr);}
+    .quotes{grid-template-columns:1fr;gap:28px;}
+    .nav-links{display:none;}
+  }
+  @media (max-width:480px){
+    .cat-grid{grid-template-columns:repeat(2,1fr);}
+    .chain-row{gap:6px 0;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="nav">
+    <div class="nav-row">
+      <div class="brand">
+        <h1>Directo</h1>
+        <span>mercado local</span>
+      </div>
+      <div class="nav-links">
+        <a href="#">Cómo funciona</a>
+        <a href="#">Categorías</a>
+        <a href="#">Productores</a>
+      </div>
+      <button class="nav-cta">Ingresar</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow">venta directa entre productores y compradores locales</div>
+    <h2>Del cultivo a tu negocio, sin pasar por seis manos.</h2>
+    <p class="sub">Conectamos pequeños productores de los municipios con restaurantes, tiendas y mayoristas. Un solo paso entre la cosecha y tu pedido.</p>
+    <div class="hero-ctas">
+      <button class="btn-primary">Soy comprador</button>
+      <button class="btn-secondary">Soy productor</button>
+    </div>
+
+    <div class="chain">
+      <div class="chain-label">la cadena de venta, antes y con directo</div>
+      <div class="chain-row before">
+        <span class="node">Productor</span><span class="arrow">→</span>
+        <span class="node">Acopiador</span><span class="arrow">→</span>
+        <span class="node">Mayorista</span><span class="arrow">→</span>
+        <span class="node">Tienda</span><span class="arrow">→</span>
+        <span class="node end">Comprador</span>
+      </div>
+      <div class="chain-row after">
+        <span class="node">Productor</span><span class="arrow">→</span>
+        <span class="node end">Comprador</span>
+      </div>
+      <div class="chain-note">Menos manos en el camino, mejor precio en los dos extremos.</div>
+    </div>
+  </section>
+
+  <div class="stats">134 productores activos · 22 municipios · 6 categorías · 890 pedidos entregados este mes</div>
+
+  <section class="steps">
+    <h2 class="section-head">Cómo funciona</h2>
+    <div class="steps-grid">
+      <div class="step">
+        <div class="n">01</div>
+        <h3>El productor publica</h3>
+        <p>Sube su cosecha disponible, cantidad y precio por unidad, directamente desde su finca.</p>
+      </div>
+      <div class="step">
+        <div class="n">02</div>
+        <h3>El comprador pide</h3>
+        <p>Restaurantes, tiendas y mayoristas arman su pedido según lo que hay disponible cada semana.</p>
+      </div>
+      <div class="step">
+        <div class="n">03</div>
+        <h3>Entrega acordada</h3>
+        <p>Se coordina la entrega directamente entre las partes, sin bodegas ni reventa de por medio.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="categories">
+    <h2 class="section-head">Lo que se cultiva en la región</h2>
+    <div class="cat-grid">
+      <div class="cat-card"><div class="k">18 productores</div><div class="name">Hortalizas</div></div>
+      <div class="cat-card"><div class="k">9 productores</div><div class="name">Frutas</div></div>
+      <div class="cat-card"><div class="k">12 productores</div><div class="name">Café</div></div>
+      <div class="cat-card"><div class="k">7 productores</div><div class="name">Lácteos</div></div>
+      <div class="cat-card"><div class="k">14 productores</div><div class="name">Granos</div></div>
+      <div class="cat-card"><div class="k">5 productores</div><div class="name">Panela</div></div>
+    </div>
+  </section>
+
+  <section class="quotes">
+    <div class="quote">
+      <p>"Antes vendía al acopiador a como cayera. Ahora sé quién compra mi café y a qué precio, cada semana."</p>
+      <span>— productor, Sonsón</span>
+    </div>
+    <div class="quote">
+      <p>"Bajamos el costo de la canasta del restaurante y la fruta llega más fresca, en menos tiempo."</p>
+      <span>— comprador, restaurante en Rionegro</span>
+    </div>
+  </section>
+
+  <footer>
+    <div>
+      <div class="fbrand">Directo</div>
+      <div class="municipios">San Carlos · Marinilla · Rionegro · Sonsón · Guatapé · El Peñol y 17 municipios más.</div>
+    </div>
+    <button class="btn-primary">Crear cuenta</button>
+  </footer>
+
+</div>
+</body>
+</html>

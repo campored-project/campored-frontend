@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Directo — Resumen del pedido</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F3F1E8;
+    --card:#FBFAF6;
+    --ink:#24291F;
+    --ink-soft:#5B5C4C;
+    --ink-faint:#8B8B78;
+    --line:#D7D1BC;
+    --line-strong:#B9B29A;
+    --accent:#6E4425;
+    --accent-dark:#4E3019;
+    --ok:#4C5F3E;
+    --ok-bg:#E7EBDD;
+    --font-display:'Fraunces',serif;
+    --font-body:'Archivo',sans-serif;
+    --font-mono:'IBM Plex Mono',monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-body);-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px 64px;}
+
+  header.top{border-bottom:1px solid var(--line);padding:22px 0 16px;}
+  .top-row{display:flex;align-items:center;gap:14px;}
+  .back{font-family:var(--font-mono);font-size:12px;color:var(--ink-faint);text-decoration:none;cursor:pointer;}
+  .brand{display:flex;align-items:baseline;gap:10px;}
+  .brand h1{font-family:var(--font-display);font-weight:600;font-size:22px;margin:0;letter-spacing:-0.01em;}
+  .brand span{font-family:var(--font-mono);font-size:10.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.08em;}
+
+  .steps-bar{display:flex;align-items:center;gap:10px;padding:20px 0;font-family:var(--font-mono);font-size:11.5px;color:var(--ink-faint);}
+  .steps-bar .s{padding:4px 0;}
+  .steps-bar .s.active{color:var(--ink);border-bottom:1px solid var(--ink);padding-bottom:6px;}
+  .steps-bar .sep{color:var(--line-strong);}
+
+  .layout{display:grid;grid-template-columns:1.6fr 1fr;gap:28px;align-items:start;}
+
+  .group{margin-bottom:28px;}
+  .group-title{font-family:var(--font-display);font-size:17px;font-weight:500;margin:0 0 12px;}
+  .producer-block{border:1px solid var(--line);background:var(--card);border-radius:6px;overflow:hidden;margin-bottom:14px;}
+  .producer-head{display:flex;justify-content:space-between;align-items:baseline;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--paper);}
+  .producer-head .name{font-family:var(--font-display);font-size:14.5px;}
+  .producer-head .place{font-family:var(--font-mono);font-size:10.5px;color:var(--ink-faint);}
+  .item{display:grid;grid-template-columns:2fr auto auto auto;gap:12px;align-items:center;padding:12px 16px;border-bottom:1px dashed var(--line);}
+  .item:last-child{border-bottom:none;}
+  .item .pname{font-family:var(--font-body);font-size:14px;}
+  .item .pname .cat{display:block;font-family:var(--font-mono);font-size:10.5px;color:var(--ink-faint);margin-top:2px;}
+  .qty{display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:13px;}
+  .qty button{width:22px;height:22px;border:1px solid var(--line-strong);background:var(--paper);border-radius:4px;cursor:pointer;color:var(--ink-soft);font-family:var(--font-mono);}
+  .unit-price{font-family:var(--font-mono);font-size:12.5px;color:var(--ink-faint);}
+  .line-total{font-family:var(--font-mono);font-size:14px;color:var(--accent-dark);}
+
+  .field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+  .field label{font-family:var(--font-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);}
+  .field input, .field select, .field textarea{border:1px solid var(--line-strong);background:var(--card);border-radius:4px;padding:9px 11px;font-family:var(--font-body);font-size:14px;color:var(--ink);width:100%;}
+  .field textarea{resize:vertical;min-height:60px;font-family:var(--font-body);}
+  .field input:focus, .field select:focus, .field textarea:focus{outline:1px solid var(--accent);}
+
+  .summary{border:1px solid var(--line);background:var(--card);border-radius:6px;padding:20px 22px;position:sticky;top:20px;}
+  .summary h2{font-family:var(--font-display);font-size:17px;font-weight:500;margin:0 0 16px;}
+  .srow{display:flex;justify-content:space-between;font-size:13.5px;color:var(--ink-soft);padding:7px 0;}
+  .srow.total{border-top:1px solid var(--line);margin-top:8px;padding-top:14px;font-family:var(--font-mono);font-size:16px;color:var(--ink);}
+  .srow.total .val{color:var(--accent-dark);font-weight:500;}
+  .summary .note{font-family:var(--font-mono);font-size:11px;color:var(--ink-faint);margin-top:14px;line-height:1.6;}
+  .btn-primary{width:100%;background:var(--ink);color:var(--paper);border:1px solid var(--ink);border-radius:4px;padding:13px 0;font-family:var(--font-mono);font-size:13px;cursor:pointer;margin-top:16px;}
+
+  @media (max-width:760px){
+    .wrap{padding:0 16px 48px;}
+    .layout{grid-template-columns:1fr;}
+    .item{grid-template-columns:1fr;gap:6px;}
+    .summary{position:static;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="top-row">
+      <span class="back">&larr; Volver al catálogo</span>
+    </div>
+  </header>
+
+  <div class="steps-bar">
+    <span class="s">Carrito</span><span class="sep">—</span>
+    <span class="s active">Resumen y entrega</span><span class="sep">—</span>
+    <span class="s">Confirmación</span>
+  </div>
+
+  <div class="layout">
+    <div>
+      <div class="group">
+        <h2 class="group-title">Tu pedido</h2>
+
+        <div class="producer-block">
+          <div class="producer-head"><span class="name">Finca La Esperanza</span><span class="place">San Carlos</span></div>
+          <div class="item">
+            <div class="pname">Tomate chonto<span class="cat">Hortalizas</span></div>
+            <div class="qty"><button>-</button>12<button>+</button></div>
+            <div class="unit-price">$3.200/kg</div>
+            <div class="line-total">$38.400</div>
+          </div>
+          <div class="item">
+            <div class="pname">Cilantro<span class="cat">Hortalizas</span></div>
+            <div class="qty"><button>-</button>4<button>+</button></div>
+            <div class="unit-price">$1.500/atado</div>
+            <div class="line-total">$6.000</div>
+          </div>
+        </div>
+
+        <div class="producer-block">
+          <div class="producer-head"><span class="name">Familia Restrepo Gómez</span><span class="place">Sonsón</span></div>
+          <div class="item">
+            <div class="pname">Café pergamino seco<span class="cat">Café</span></div>
+            <div class="qty"><button>-</button>5<button>+</button></div>
+            <div class="unit-price">$14.500/kg</div>
+            <div class="line-total">$72.500</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h2 class="group-title">Datos de entrega</h2>
+        <div class="field">
+          <label>Nombre del negocio</label>
+          <input type="text" value="Restaurante El Balcón">
+        </div>
+        <div class="field">
+          <label>Dirección de entrega</label>
+          <input type="text" placeholder="Calle, número, municipio">
+        </div>
+        <div class="field">
+          <label>Fecha de entrega preferida</label>
+          <input type="text" placeholder="Ej. Viernes 29 de agosto">
+        </div>
+        <div class="field">
+          <label>Notas para el productor (opcional)</label>
+          <textarea placeholder="Ej. Entregar en la mañana, preguntar por Carlos"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary">
+      <h2>Resumen</h2>
+      <div class="srow"><span>2 productores</span><span>3 productos</span></div>
+      <div class="srow"><span>Subtotal</span><span>$116.900</span></div>
+      <div class="srow"><span>Coordinación de entrega</span><span>$0</span></div>
+      <div class="srow total"><span>Total</span><span class="val">$116.900</span></div>
+      <div class="note">El pago se coordina directamente con cada productor al momento de la entrega. Directo no cobra comisión sobre esta venta.</div>
+      <button class="btn-primary">Confirmar pedido</button>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Directo — Panel del productor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F3F1E8;
+    --card:#FBFAF6;
+    --ink:#24291F;
+    --ink-soft:#5B5C4C;
+    --ink-faint:#8B8B78;
+    --line:#D7D1BC;
+    --line-strong:#B9B29A;
+    --accent:#6E4425;
+    --accent-dark:#4E3019;
+    --ok:#4C5F3E;
+    --ok-bg:#E7EBDD;
+    --low:#9C4638;
+    --low-bg:#F2E1DC;
+    --font-display:'Fraunces',serif;
+    --font-body:'Archivo',sans-serif;
+    --font-mono:'IBM Plex Mono',monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-body);-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:980px;margin:0 auto;padding:0 24px 64px;}
+
+  header.top{border-bottom:1px solid var(--line);padding:22px 0 16px;}
+  .top-row{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .brand{display:flex;align-items:baseline;gap:10px;}
+  .brand h1{font-family:var(--font-display);font-weight:600;font-size:23px;margin:0;letter-spacing:-0.01em;}
+  .brand span{font-family:var(--font-mono);font-size:10.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.08em;}
+  .who{text-align:right;}
+  .who .name{font-family:var(--font-display);font-size:15px;}
+  .who .place{font-family:var(--font-mono);font-size:11px;color:var(--ink-faint);}
+
+  .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:24px 0;}
+  .stat{border:1px solid var(--line);background:var(--card);border-radius:6px;padding:14px 16px;}
+  .stat .label{font-family:var(--font-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);margin-bottom:8px;}
+  .stat .num{font-family:var(--font-display);font-size:26px;font-weight:500;}
+
+  .section-head{display:flex;align-items:center;justify-content:space-between;margin:36px 0 16px;}
+  .section-head h2{font-family:var(--font-display);font-size:20px;font-weight:500;margin:0;}
+  .btn-primary{background:var(--ink);color:var(--paper);border:1px solid var(--ink);border-radius:4px;padding:10px 16px;font-family:var(--font-mono);font-size:12.5px;cursor:pointer;}
+  .btn-ghost{background:transparent;color:var(--ink-soft);border:1px solid var(--line-strong);border-radius:4px;padding:6px 12px;font-family:var(--font-mono);font-size:11.5px;cursor:pointer;}
+
+  .form-card{border:1px solid var(--line);background:var(--card);border-radius:6px;padding:22px 24px;margin-bottom:8px;display:none;}
+  .form-card.open{display:block;}
+  .form-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px 18px;}
+  .field{display:flex;flex-direction:column;gap:6px;}
+  .field.span2{grid-column:1 / -1;}
+  .field label{font-family:var(--font-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);}
+  .field input, .field select{border:1px solid var(--line-strong);background:var(--paper);border-radius:4px;padding:9px 11px;font-family:var(--font-body);font-size:14px;color:var(--ink);}
+  .field input:focus, .field select:focus{outline:1px solid var(--accent);}
+  .form-actions{display:flex;gap:10px;margin-top:18px;}
+
+  .table{border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--card);}
+  .row{display:grid;grid-template-columns:2.4fr 1fr 1fr 1fr auto;gap:12px;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line);}
+  .row:last-child{border-bottom:none;}
+  .row.head{background:var(--paper);font-family:var(--font-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);padding:10px 18px;}
+  .prod-name{font-family:var(--font-display);font-size:15.5px;}
+  .prod-cat{font-family:var(--font-mono);font-size:11px;color:var(--ink-faint);display:block;margin-top:2px;}
+  .cell-mono{font-family:var(--font-mono);font-size:13px;color:var(--ink-soft);}
+  .status-toggle{display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:11px;padding:4px 9px;border-radius:100px;cursor:pointer;width:fit-content;}
+  .status-toggle.ok{background:var(--ok-bg);color:var(--ok);}
+  .status-toggle.low{background:var(--low-bg);color:var(--low);}
+  .status-toggle .dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
+  .row-actions{display:flex;gap:8px;}
+  .icon-btn{border:1px solid var(--line-strong);background:transparent;border-radius:4px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink-soft);}
+
+  @media (max-width:720px){
+    .wrap{padding:0 16px 48px;}
+    .stats-row{grid-template-columns:1fr;}
+    .form-grid{grid-template-columns:1fr;}
+    .row{grid-template-columns:1fr;gap:6px;padding:16px 14px;}
+    .row.head{display:none;}
+    .row-actions{margin-top:6px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="top-row">
+      <div class="brand">
+        <h1>Directo</h1>
+        <span>panel del productor</span>
+      </div>
+      <div class="who">
+        <div class="name">Finca La Esperanza</div>
+        <div class="place">San Carlos, Antioquia</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="stats-row">
+    <div class="stat"><div class="label">Pedidos pendientes</div><div class="num">4</div></div>
+    <div class="stat"><div class="label">Productos publicados</div><div class="num">7</div></div>
+    <div class="stat"><div class="label">Ventas esta semana</div><div class="num">$612.000</div></div>
+  </div>
+
+  <div class="section-head">
+    <h2>Publicar producto</h2>
+    <button class="btn-primary" id="toggle-form">Nuevo producto</button>
+  </div>
+
+  <div class="form-card" id="form-card">
+    <div class="form-grid">
+      <div class="field span2">
+        <label>Nombre del producto</label>
+        <input type="text" placeholder="Ej. Tomate chonto">
+      </div>
+      <div class="field">
+        <label>Categoría</label>
+        <select>
+          <option>Hortalizas</option>
+          <option>Frutas</option>
+          <option>Café</option>
+          <option>Lácteos</option>
+          <option>Granos</option>
+          <option>Panela</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Unidad</label>
+        <select>
+          <option>kg</option>
+          <option>lb</option>
+          <option>arroba</option>
+          <option>unidad</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Cantidad disponible</label>
+        <input type="text" placeholder="Ej. 80">
+      </div>
+      <div class="field">
+        <label>Precio por unidad</label>
+        <input type="text" placeholder="Ej. 3.200">
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-primary">Publicar</button>
+      <button class="btn-ghost" id="cancel-form">Cancelar</button>
+    </div>
+  </div>
+
+  <div class="section-head" style="margin-top:44px;">
+    <h2>Mis productos</h2>
+  </div>
+
+  <div class="table">
+    <div class="row head">
+      <div>Producto</div>
+      <div>Cantidad</div>
+      <div>Precio</div>
+      <div>Estado</div>
+      <div></div>
+    </div>
+
+    <div class="row">
+      <div><span class="prod-name">Tomate chonto</span><span class="prod-cat">Hortalizas</span></div>
+      <div class="cell-mono">80 kg</div>
+      <div class="cell-mono">$3.200 / kg</div>
+      <div><div class="status-toggle ok"><span class="dot"></span>Disponible</div></div>
+      <div class="row-actions"><button class="icon-btn">✎</button></div>
+    </div>
+
+    <div class="row">
+      <div><span class="prod-name">Cilantro</span><span class="prod-cat">Hortalizas</span></div>
+      <div class="cell-mono">12 atados</div>
+      <div class="cell-mono">$1.500 / atado</div>
+      <div><div class="status-toggle low"><span class="dot"></span>Últimas unidades</div></div>
+      <div class="row-actions"><button class="icon-btn">✎</button></div>
+    </div>
+
+    <div class="row">
+      <div><span class="prod-name">Fríjol cargamanto</span><span class="prod-cat">Granos</span></div>
+      <div class="cell-mono">45 kg</div>
+      <div class="cell-mono">$7.900 / kg</div>
+      <div><div class="status-toggle ok"><span class="dot"></span>Disponible</div></div>
+      <div class="row-actions"><button class="icon-btn">✎</button></div>
+    </div>
+
+    <div class="row">
+      <div><span class="prod-name">Ahuyama</span><span class="prod-cat">Hortalizas</span></div>
+      <div class="cell-mono">0 kg</div>
+      <div class="cell-mono">$2.400 / kg</div>
+      <div><div class="status-toggle low" style="background:var(--line);color:var(--ink-faint);"><span class="dot"></span>Agotado</div></div>
+      <div class="row-actions"><button class="icon-btn">✎</button></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var formCard = document.getElementById('form-card');
+document.getElementById('toggle-form').addEventListener('click', function(){
+  formCard.classList.toggle('open');
+});
+document.getElementById('cancel-form').addEventListener('click', function(){
+  formCard.classList.remove('open');
+});
+document.querySelectorAll('.status-toggle').forEach(function(t){
+  t.addEventListener('click', function(){
+    if(t.classList.contains('ok')){
+      t.classList.remove('ok'); t.classList.add('low');
+      t.innerHTML = '<span class="dot"></span>Últimas unidades';
+    } else {
+      t.classList.remove('low'); t.classList.add('ok');
+      t.style.background=''; t.style.color='';
+      t.innerHTML = '<span class="dot"></span>Disponible';
+    }
+  });
+});
+</script>
+</body>
+</html>
