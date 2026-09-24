@@ -47,6 +47,7 @@
 
 body {
   margin: 0;
+  border-top: 3px solid var(--color-accent);
   background-color: #F3F1E8;
   color: #24291F;
   font-family: 'Archivo', sans-serif;
