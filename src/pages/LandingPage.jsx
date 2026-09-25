@@ -39,7 +39,7 @@ export default function LandingPage() {
               className="font-display font-medium text-[52px] leading-[1.06] tracking-[-0.015em] max-w-[760px] mt-0 mb-[22px] max-md:text-[36px] animate-fade-up"
               style={{ animationDelay: '80ms' }}
             >
-              Del cultivo a tu negocio, sin pasar por seis manos.
+              Del cultivo a tu negocio, sin intermediarios.
             </h2>
             <p
               className="text-[16.5px] leading-relaxed text-ink-soft max-w-[520px] mt-0 mb-8 animate-fade-up"
