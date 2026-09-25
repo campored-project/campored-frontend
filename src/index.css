@@ -55,6 +55,15 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Fondo del hero: paisaje rural con velo sage encima */
+.hero-fondo {
+  background-image:
+    linear-gradient(rgba(232, 237, 222, 0.82), rgba(232, 237, 222, 0.82)),
+    url('/fondo.webp');
+  background-size: cover;
+  background-position: center 35%;
+}
+
 /* Textura de papel sobre toda la app */
 body::before {
   content: '';
