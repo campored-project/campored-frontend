@@ -28,8 +28,8 @@ export default function LandingPage() {
     <div>
       <NavBar />
 
-      {/* Hero — fondo salvia a pantalla completa */}
-      <div className="bg-ok-bg">
+      {/* Hero — paisaje rural de fondo con velo sage */}
+      <div className="hero-fondo">
         <div className="max-w-[1180px] mx-auto px-6">
           <section className="py-16 pb-12 border-b border-line">
             <p className="font-mono text-[11px] uppercase tracking-[0.1em] text-accent-dark mb-[18px] m-0 animate-fade-up">
