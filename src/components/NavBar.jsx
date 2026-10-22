@@ -1,4 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
+
+import { ROL } from '../constants/enums'
 import { useAuth } from '../context/AuthContext'
 
 export default function NavBar({ subtitulo = 'mercado local' }) {
@@ -23,8 +25,22 @@ export default function NavBar({ subtitulo = 'mercado local' }) {
         </Link>
 
         <div className="flex items-center gap-4">
+          <Link
+            to="/catalogo"
+            className="font-mono text-[12.5px] text-ink-soft no-underline hidden sm:block"
+          >
+            Catálogo
+          </Link>
           {usuario ? (
             <>
+              {usuario.rol === ROL.PRODUCTOR && (
+                <Link
+                  to="/mis-ofertas"
+                  className="font-mono text-[12.5px] text-ink-soft no-underline"
+                >
+                  Mis ofertas
+                </Link>
+              )}
               <Link
                 to="/perfil"
                 className="font-mono text-[12.5px] text-ink-soft no-underline"

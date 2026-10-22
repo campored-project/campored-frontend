@@ -13,15 +13,26 @@ async function request(path, { method = 'GET', body, auth = false } = {}) {
     if (token) headers['Authorization'] = `Bearer ${token}`
   }
 
+  // 60 s para tolerar el cold start de Render Free
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 60_000)
+
   let response
   try {
     response = await fetch(`${BASE_URL}${path}`, {
       method,
       headers,
       body: body !== undefined ? JSON.stringify(body) : undefined,
+      signal: controller.signal,
     })
-  } catch {
-    throw { status: 0, message: 'No hay conexión con el servidor.', fieldErrors: {} }
+  } catch (err) {
+    const message =
+      err.name === 'AbortError'
+        ? 'El servidor tardó demasiado en responder. Puede estar iniciando — intenta de nuevo en un momento.'
+        : 'No hay conexión con el servidor.'
+    throw { status: 0, message, fieldErrors: {} }
+  } finally {
+    clearTimeout(timeoutId)
   }
 
   if (response.ok) {
@@ -45,6 +56,9 @@ async function request(path, { method = 'GET', body, auth = false } = {}) {
 }
 
 export const client = {
+  get: (path, auth = false) => request(path, { auth }),
   post: (path, body) => request(path, { method: 'POST', body }),
+  postAuth: (path, body) => request(path, { method: 'POST', body, auth: true }),
+  put: (path, body) => request(path, { method: 'PUT', body, auth: true }),
   patch: (path, body) => request(path, { method: 'PATCH', body, auth: true }),
 }
