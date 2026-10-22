@@ -99,7 +99,17 @@ export default function DetalleOfertaPage() {
           ← Catálogo
         </Link>
 
-        <div className="mt-6 bg-card border border-line rounded-[6px] p-6 md:p-8">
+        <div className="mt-6 bg-card border border-line rounded-[6px] overflow-hidden">
+          <div className="h-[150px] overflow-hidden">
+            <img
+              src="/ilustracion-rural.avif"
+              alt=""
+              aria-hidden="true"
+              className="w-full h-full object-cover object-bottom"
+            />
+          </div>
+
+          <div className="p-6 md:p-8">
           {/* Encabezado */}
           <div className="flex items-start justify-between gap-4 flex-wrap mb-4">
             <div>
@@ -199,6 +209,7 @@ export default function DetalleOfertaPage() {
               )}
             </div>
           )}
+          </div>
         </div>
       </div>
     </>

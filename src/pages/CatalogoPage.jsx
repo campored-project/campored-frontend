@@ -76,6 +76,15 @@ export default function CatalogoPage() {
     <>
       <NavBar subtitulo="catálogo" />
 
+      <div className="h-[170px] overflow-hidden border-b border-line">
+        <img
+          src="/ilustracion-rural.avif"
+          alt=""
+          aria-hidden="true"
+          className="w-full h-full object-cover object-bottom"
+        />
+      </div>
+
       <div className="max-w-[1180px] mx-auto px-6 pb-16">
         {/* Barra de stats */}
         <div className="border-b border-line py-3 mb-0">
