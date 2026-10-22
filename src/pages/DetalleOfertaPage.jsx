@@ -91,7 +91,14 @@ export default function DetalleOfertaPage() {
   return (
     <>
       <NavBar />
-      <div className="max-w-[800px] mx-auto px-6 py-8">
+      <div className="relative min-h-[calc(100vh-64px)] flex items-center justify-center">
+        <img
+          src="/ilustracion-rural.avif"
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover opacity-[0.12]"
+        />
+        <div className="relative w-full max-w-[600px] mx-auto px-6 py-8">
         <Link
           to="/catalogo"
           className="font-mono text-[12px] text-ink-faint no-underline"
@@ -99,17 +106,7 @@ export default function DetalleOfertaPage() {
           ← Catálogo
         </Link>
 
-        <div className="mt-6 bg-card border border-line rounded-[6px] overflow-hidden">
-          <div className="h-[150px] overflow-hidden">
-            <img
-              src="/ilustracion-rural.avif"
-              alt=""
-              aria-hidden="true"
-              className="w-full h-full object-cover object-bottom"
-            />
-          </div>
-
-          <div className="p-6 md:p-8">
+        <div className="mt-6 bg-card/50 backdrop-blur-sm border border-line rounded-[6px] p-6 md:p-8">
           {/* Encabezado */}
           <div className="flex items-start justify-between gap-4 flex-wrap mb-4">
             <div>
@@ -209,7 +206,7 @@ export default function DetalleOfertaPage() {
               )}
             </div>
           )}
-          </div>
+        </div>
         </div>
       </div>
     </>
