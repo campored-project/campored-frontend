@@ -7,8 +7,14 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://campored-backend-production.up.railway.app',
+        target: 'https://campored-backend.onrender.com',
         changeOrigin: true,
+        // El backend valida el header Origin contra su lista de CORS.
+        // En local el browser envía localhost, que no está en esa lista → 403.
+        // Sobreescribimos Origin para que el proxy parezca el propio backend.
+        headers: {
+          origin: 'https://campored-backend.onrender.com',
+        },
       },
     },
   },

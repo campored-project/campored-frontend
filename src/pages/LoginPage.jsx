@@ -26,7 +26,7 @@ export default function LoginPage() {
     setError('')
     try {
       await login(form.correo, form.contrasena)
-      navigate('/perfil', { replace: true })
+      navigate('/catalogo', { replace: true })
     } catch (err) {
       if (err.status === 401) {
         setError('Correo o contraseña incorrectos.')

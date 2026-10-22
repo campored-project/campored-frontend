@@ -3,5 +3,5 @@ import { useAuth } from '../context/AuthContext'
 
 export default function PublicRoute() {
   const { token } = useAuth()
-  return token ? <Navigate to="/perfil" replace /> : <Outlet />
+  return token ? <Navigate to="/catalogo" replace /> : <Outlet />
 }

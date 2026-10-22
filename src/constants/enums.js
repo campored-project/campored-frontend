@@ -39,6 +39,69 @@ export const ROL = {
   ADMINISTRADOR: 'ADMINISTRADOR',
 }
 
+export const PRODUCTOS = [
+  { valor: 'TOMATE_CHONTO', label: 'Tomate chonto' },
+  { valor: 'CAFE_PERGAMINO', label: 'Café pergamino' },
+  { valor: 'MORA_CASTILLA', label: 'Mora de castilla' },
+  { valor: 'CILANTRO', label: 'Cilantro' },
+  { valor: 'FRIJOL_CARGAMANTO', label: 'Fríjol cargamanto' },
+  { valor: 'AGUACATE', label: 'Aguacate' },
+  { valor: 'PLATANO', label: 'Plátano' },
+  { valor: 'OTRO', label: 'Otro' },
+]
+
+export const UNIDADES_MEDIDA = [
+  { valor: 'KILOGRAMO', label: 'Kilogramo' },
+  { valor: 'ARROBA', label: 'Arroba' },
+  { valor: 'CARGA', label: 'Carga' },
+  { valor: 'BULTO', label: 'Bulto' },
+  { valor: 'CANASTILLA', label: 'Canastilla' },
+  { valor: 'TONELADA', label: 'Tonelada' },
+  { valor: 'UNIDAD', label: 'Unidad' },
+]
+
+export const ESTADOS_CULTIVO = [
+  { valor: 'EN_CRECIMIENTO', label: 'En cultivo' },
+  { valor: 'DISPONIBLE', label: 'Disponible para entrega inmediata' },
+]
+
+export const MODALIDADES_LOGISTICA = [
+  { valor: 'RECOGIDA_FINCA', label: 'Recogida en finca' },
+  { valor: 'DESPACHO_PRODUCTOR', label: 'Despacho del productor' },
+  { valor: 'AMBAS', label: 'Ambas modalidades' },
+]
+
+// --- helpers de label ---
+
 export function labelMunicipio(valor) {
   return MUNICIPIOS.find((m) => m.valor === valor)?.label ?? valor
+}
+
+export function labelProducto(valor) {
+  return PRODUCTOS.find((p) => p.valor === valor)?.label ?? valor
+}
+
+export function labelUnidad(valor) {
+  return UNIDADES_MEDIDA.find((u) => u.valor === valor)?.label ?? valor
+}
+
+export function labelUnidadCorta(valor) {
+  const map = {
+    KILOGRAMO: 'kg',
+    ARROBA: 'arroba',
+    CARGA: 'carga',
+    BULTO: 'bulto',
+    CANASTILLA: 'canastilla',
+    TONELADA: 'ton',
+    UNIDAD: 'und',
+  }
+  return map[valor] ?? valor.toLowerCase()
+}
+
+export function labelModalidad(valor) {
+  return MODALIDADES_LOGISTICA.find((m) => m.valor === valor)?.label ?? valor
+}
+
+export function labelEstadoCultivo(valor) {
+  return ESTADOS_CULTIVO.find((e) => e.valor === valor)?.label ?? valor
 }
