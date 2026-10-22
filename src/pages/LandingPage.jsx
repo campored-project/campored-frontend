@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 
 import NavBar from '../components/NavBar'
+import { useAuth } from '../context/AuthContext'
 import { MUNICIPIOS } from '../constants/enums'
 
 const PASOS = [
@@ -23,6 +24,7 @@ const PASOS = [
 
 export default function LandingPage() {
   const navigate = useNavigate()
+  const { usuario } = useAuth()
 
   return (
     <div>
@@ -53,20 +55,32 @@ export default function LandingPage() {
               className="flex gap-3 flex-wrap mb-14 animate-fade-up"
               style={{ animationDelay: '280ms' }}
             >
-              <button
-                type="button"
-                onClick={() => navigate('/registro?rol=COMPRADOR')}
-                className="bg-ink text-paper border border-ink rounded-[4px] px-5 py-3 font-mono text-[13px] cursor-pointer hover:bg-accent-dark hover:border-accent-dark"
-              >
-                Soy comprador
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate('/registro?rol=PRODUCTOR')}
-                className="bg-transparent text-ink border border-line-strong rounded-[4px] px-5 py-3 font-mono text-[13px] cursor-pointer hover:border-ink hover:bg-ink hover:text-paper"
-              >
-                Soy productor
-              </button>
+              {usuario ? (
+                <button
+                  type="button"
+                  onClick={() => navigate('/catalogo')}
+                  className="bg-ink text-paper border border-ink rounded-[4px] px-5 py-3 font-mono text-[13px] cursor-pointer hover:bg-accent-dark hover:border-accent-dark"
+                >
+                  Ir al catálogo
+                </button>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => navigate('/registro?rol=COMPRADOR')}
+                    className="bg-ink text-paper border border-ink rounded-[4px] px-5 py-3 font-mono text-[13px] cursor-pointer hover:bg-accent-dark hover:border-accent-dark"
+                  >
+                    Soy comprador
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => navigate('/registro?rol=PRODUCTOR')}
+                    className="bg-transparent text-ink border border-line-strong rounded-[4px] px-5 py-3 font-mono text-[13px] cursor-pointer hover:border-ink hover:bg-ink hover:text-paper"
+                  >
+                    Soy productor
+                  </button>
+                </>
+              )}
             </div>
 
             {/* Cadena de valor */}
@@ -158,13 +172,15 @@ export default function LandingPage() {
               Oriente Antioqueño — productor a comprador, sin intermediarios.
             </div>
           </div>
-          <button
-            type="button"
-            onClick={() => navigate('/registro')}
-            className="bg-ink text-paper border border-ink rounded-[4px] px-5 py-3 font-mono text-[13px] cursor-pointer hover:bg-accent-dark hover:border-accent-dark"
-          >
-            Crear cuenta
-          </button>
+          {!usuario && (
+            <button
+              type="button"
+              onClick={() => navigate('/registro')}
+              className="bg-ink text-paper border border-ink rounded-[4px] px-5 py-3 font-mono text-[13px] cursor-pointer hover:bg-accent-dark hover:border-accent-dark"
+            >
+              Crear cuenta
+            </button>
+          )}
         </footer>
       </div>
     </div>

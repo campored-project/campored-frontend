@@ -34,10 +34,9 @@ export default function TarjetaOferta({ oferta, acciones = null }) {
   const nombre =
     oferta.producto === 'OTRO' ? oferta.productoOtro : labelProducto(oferta.producto)
   const finca = getFinca(oferta)
-
   return (
-    <div className="bg-card border border-line rounded-[6px] p-[18px] relative flex flex-col">
-      <span className="absolute top-3.5 left-3.5 w-[7px] h-[7px] rounded-full bg-paper border border-line-strong" />
+    <div className="bg-card border border-line rounded-[6px] p-[18px] relative flex flex-col overflow-hidden hover:-translate-y-1 hover:shadow-md transition-all duration-200">
+<span className="absolute top-3.5 left-3.5 w-[7px] h-[7px] rounded-full bg-paper border border-line-strong" />
 
       <div className="pl-5">
         <p className="font-mono text-[10.5px] uppercase tracking-[0.07em] text-ink-faint mb-2">
