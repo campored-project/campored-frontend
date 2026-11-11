@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { Sprout } from 'lucide-react'
 
 import NavBar from '../components/NavBar'
 import { obtenerOferta } from '../api/ofertas'
 import {
   ROL,
+  imagenProducto,
   labelEstadoCultivo,
   labelModalidad,
   labelMunicipio,
@@ -14,13 +16,13 @@ import {
 import { useAuth } from '../context/AuthContext'
 import { formatCOP } from '../utils/formato'
 
-function BadgeEstado({ estado }) {
+function BadgeEstado({ estado, className = '' }) {
   const activa = estado === 'ACTIVA'
   return (
     <span
       className={`flex items-center gap-1.5 font-mono text-[11px] px-2.5 py-1 rounded-full ${
-        activa ? 'bg-ok-bg text-ok' : 'bg-line text-ink-faint'
-      }`}
+        activa ? 'bg-ok-bg/95 text-ok border border-ok/30' : 'bg-line/95 text-ink-faint border border-line-strong'
+      } ${className}`}
     >
       <span className="w-1.5 h-1.5 rounded-full bg-current" />
       {activa ? 'Disponible' : 'Agotada'}
@@ -45,6 +47,8 @@ export default function DetalleOfertaPage() {
   const [oferta, setOferta] = useState(null)
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState('')
+  const [errorImagenId, setErrorImagenId] = useState(null)
+  const errorImagen = errorImagenId === id
 
   useEffect(() => {
     obtenerOferta(id)
@@ -87,6 +91,7 @@ export default function DetalleOfertaPage() {
   const productor = oferta.productor ?? {}
   const esComprador = usuario?.rol === ROL.COMPRADOR
   const tieneContacto = productor.telefonoContacto || productor.whatsappContacto
+  const imgSrc = imagenProducto(oferta.producto, oferta.productoOtro)
 
   return (
     <>
@@ -99,114 +104,135 @@ export default function DetalleOfertaPage() {
           className="absolute inset-0 w-full h-full object-cover opacity-[0.12]"
         />
         <div className="relative w-full max-w-[600px] mx-auto px-6 py-8">
-        <Link
-          to="/catalogo"
-          className="font-mono text-[12px] text-ink-faint no-underline"
-        >
-          ← Catálogo
-        </Link>
+          <Link
+            to="/catalogo"
+            className="font-mono text-[12px] text-ink-faint no-underline"
+          >
+            ← Catálogo
+          </Link>
 
-        <div className="mt-6 bg-card/50 backdrop-blur-sm border border-line rounded-[6px] p-6 md:p-8">
-          {/* Encabezado */}
-          <div className="flex items-start justify-between gap-4 flex-wrap mb-4">
-            <div>
-              <p className="font-mono text-[10.5px] uppercase tracking-[0.07em] text-ink-faint mb-2">
-                {finca.municipio ? labelMunicipio(finca.municipio) : '—'} · {finca.nombre}
-                {finca.vereda && ` · Vereda ${finca.vereda}`}
-              </p>
-              <h1 className="font-display text-[28px] font-medium m-0 leading-tight">{nombre}</h1>
-            </div>
-            <BadgeEstado estado={oferta.estadoPublicacion ?? 'ACTIVA'} />
-          </div>
-
-          {oferta.descripcion && (
-            <p className="text-[14px] text-ink-soft leading-relaxed mt-2 mb-0">
-              {oferta.descripcion}
-            </p>
-          )}
-
-          <hr className="border-none border-t border-dashed border-line-strong my-6" />
-
-          {/* Datos de la oferta */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-4">
-            <Dato
-              label="Precio"
-              valor={`${formatCOP(oferta.precioUnitario)} / ${labelUnidadCorta(oferta.unidadMedida)}`}
-            />
-            <Dato
-              label="Cantidad"
-              valor={`${oferta.cantidadDisponible} ${labelUnidadCorta(oferta.unidadMedida)}`}
-            />
-            <Dato label="Estado cultivo" valor={labelEstadoCultivo(oferta.estadoCultivo)} />
-            <Dato label="Modalidad de entrega" valor={labelModalidad(oferta.modalidadLogistica)} />
-            {oferta.diasRestantesCosecha != null && (
-              <Dato
-                label="Días para cosecha"
-                valor={
-                  oferta.diasRestantesCosecha === 0 ? 'Hoy' : `${oferta.diasRestantesCosecha} días`
-                }
+          <div className="mt-6 bg-card/50 backdrop-blur-sm border border-line rounded-[6px] p-6 md:p-8">
+            {/* Cabecera fotográfica del producto */}
+            <div className="aspect-[4/3] sm:aspect-[16/7] w-full rounded-[6px] overflow-hidden relative mb-6 border border-line bg-ok-bg">
+              {!errorImagen ? (
+                <img
+                  src={imgSrc}
+                  alt={nombre || 'Producto agrícola'}
+                  loading="eager"
+                  onError={() => setErrorImagenId(id)}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-ok-bg flex items-center justify-center text-ok">
+                  <Sprout className="w-12 h-12" aria-hidden="true" />
+                </div>
+              )}
+              <BadgeEstado
+                estado={oferta.estadoPublicacion ?? 'ACTIVA'}
+                className="absolute top-3 left-3 backdrop-blur-xs"
               />
+            </div>
+
+            {/* Encabezado */}
+            <div className="flex items-start justify-between gap-4 flex-wrap mb-4">
+              <div>
+                <p className="font-mono text-[10.5px] uppercase tracking-[0.07em] text-ink-faint mb-2">
+                  {finca.municipio ? labelMunicipio(finca.municipio) : '—'} · {finca.nombre}
+                  {finca.vereda && ` · Vereda ${finca.vereda}`}
+                </p>
+                <h1 className="font-display text-[28px] font-medium m-0 leading-tight">{nombre}</h1>
+              </div>
+              <BadgeEstado estado={oferta.estadoPublicacion ?? 'ACTIVA'} />
+            </div>
+
+            {oferta.descripcion && (
+              <p className="text-[14px] text-ink-soft leading-relaxed mt-2 mb-0">
+                {oferta.descripcion}
+              </p>
+            )}
+
+            <hr className="border-none border-t border-dashed border-line-strong my-6" />
+
+            {/* Datos de la oferta */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-4">
+              <Dato
+                label="Precio"
+                valor={`${formatCOP(oferta.precioUnitario)} / ${labelUnidadCorta(oferta.unidadMedida)}`}
+              />
+              <Dato
+                label="Cantidad"
+                valor={`${oferta.cantidadDisponible} ${labelUnidadCorta(oferta.unidadMedida)}`}
+              />
+              <Dato label="Estado cultivo" valor={labelEstadoCultivo(oferta.estadoCultivo)} />
+              <Dato label="Modalidad de entrega" valor={labelModalidad(oferta.modalidadLogistica)} />
+              {oferta.diasRestantesCosecha != null && (
+                <Dato
+                  label="Días para cosecha"
+                  valor={
+                    oferta.diasRestantesCosecha === 0 ? 'Hoy' : `${oferta.diasRestantesCosecha} días`
+                  }
+                />
+              )}
+            </div>
+
+            <hr className="border-none border-t border-dashed border-line-strong my-6" />
+
+            {/* Sección de contacto */}
+            <p className="font-mono text-[10.5px] uppercase tracking-[0.07em] text-ink-faint mb-4">
+              Contactar productor
+            </p>
+
+            {!usuario && (
+              <div className="border border-line rounded-[4px] bg-ok-bg px-4 py-3">
+                <p className="text-[14px] text-ok m-0">
+                  <Link to="/login" className="text-ok font-medium no-underline underline-offset-2">
+                    Inicia sesión como comprador
+                  </Link>{' '}
+                  para ver los datos de contacto.
+                </p>
+              </div>
+            )}
+
+            {usuario && !esComprador && (
+              <p className="text-[14px] text-ink-soft">
+                Solo los compradores pueden ver los datos de contacto del productor.
+              </p>
+            )}
+
+            {esComprador && !tieneContacto && (
+              <p className="text-[14px] text-ink-soft">
+                Los datos de contacto no están disponibles en este momento.
+              </p>
+            )}
+
+            {esComprador && tieneContacto && (
+              <div className="flex flex-col gap-2">
+                {productor.nombreCompleto && (
+                  <p className="font-display text-[17px] m-0 mb-2">{productor.nombreCompleto}</p>
+                )}
+                {productor.whatsappDisponible && productor.whatsappContacto && (
+                  <a
+                    href={`https://wa.me/${productor.whatsappContacto.replace('+', '')}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center justify-between gap-6 border border-ok bg-ok-bg rounded-[6px] px-4 py-3 no-underline group"
+                  >
+                    <span className="font-mono text-[12px] text-ok uppercase tracking-wider">WhatsApp</span>
+                    <span className="font-mono text-[14px] text-ink">{productor.whatsappContacto}</span>
+                  </a>
+                )}
+                {productor.llamadaDisponible && productor.telefonoContacto && (
+                  <a
+                    href={`tel:${productor.telefonoContacto}`}
+                    className="flex items-center justify-between gap-6 border border-line-strong bg-card rounded-[6px] px-4 py-3 no-underline"
+                  >
+                    <span className="font-mono text-[12px] text-ink-faint uppercase tracking-wider">Llamar</span>
+                    <span className="font-mono text-[14px] text-ink">{productor.telefonoContacto}</span>
+                  </a>
+                )}
+              </div>
             )}
           </div>
-
-          <hr className="border-none border-t border-dashed border-line-strong my-6" />
-
-          {/* Sección de contacto */}
-          <p className="font-mono text-[10.5px] uppercase tracking-[0.07em] text-ink-faint mb-4">
-            Contactar productor
-          </p>
-
-          {!usuario && (
-            <div className="border border-line rounded-[4px] bg-ok-bg px-4 py-3">
-              <p className="text-[14px] text-ok m-0">
-                <Link to="/login" className="text-ok font-medium no-underline underline-offset-2">
-                  Inicia sesión como comprador
-                </Link>{' '}
-                para ver los datos de contacto.
-              </p>
-            </div>
-          )}
-
-          {usuario && !esComprador && (
-            <p className="text-[14px] text-ink-soft">
-              Solo los compradores pueden ver los datos de contacto del productor.
-            </p>
-          )}
-
-          {esComprador && !tieneContacto && (
-            <p className="text-[14px] text-ink-soft">
-              Los datos de contacto no están disponibles en este momento.
-            </p>
-          )}
-
-          {esComprador && tieneContacto && (
-            <div className="flex flex-col gap-2">
-              {productor.nombreCompleto && (
-                <p className="font-display text-[17px] m-0 mb-2">{productor.nombreCompleto}</p>
-              )}
-              {productor.whatsappDisponible && productor.whatsappContacto && (
-                <a
-                  href={`https://wa.me/${productor.whatsappContacto.replace('+', '')}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center justify-between gap-6 border border-ok bg-ok-bg rounded-[6px] px-4 py-3 no-underline group"
-                >
-                  <span className="font-mono text-[12px] text-ok uppercase tracking-wider">WhatsApp</span>
-                  <span className="font-mono text-[14px] text-ink">{productor.whatsappContacto}</span>
-                </a>
-              )}
-              {productor.llamadaDisponible && productor.telefonoContacto && (
-                <a
-                  href={`tel:${productor.telefonoContacto}`}
-                  className="flex items-center justify-between gap-6 border border-line-strong bg-card rounded-[6px] px-4 py-3 no-underline"
-                >
-                  <span className="font-mono text-[12px] text-ink-faint uppercase tracking-wider">Llamar</span>
-                  <span className="font-mono text-[14px] text-ink">{productor.telefonoContacto}</span>
-                </a>
-              )}
-            </div>
-          )}
-        </div>
         </div>
       </div>
     </>

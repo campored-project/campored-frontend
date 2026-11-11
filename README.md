@@ -62,3 +62,8 @@ src/
   context/      AuthContext: sesión, token, usuario, expiración automática
   pages/        Landing, Login, Registro, Perfil
 ```
+
+## Créditos de imágenes
+- Fotografías agrícolas y de paisajes del Oriente Antioqueño obtenidas bajo licencia libre de Unsplash y Pexels.
+- Procesamiento y optimización a formato WebP realizado localmente con Sharp.
+

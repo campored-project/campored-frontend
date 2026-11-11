@@ -41,3 +41,4 @@ coverage/
 # Claude Code (local rules only - DO NOT COMMIT)
 CLAUDE.md
 /CLAUDE.md
+_raw/

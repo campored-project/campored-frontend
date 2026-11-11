@@ -1,22 +1,37 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { MapPin, Sprout, Truck } from 'lucide-react'
 
 import {
+  imagenProducto,
+  labelModalidad,
   labelMunicipio,
   labelProducto,
   labelUnidadCorta,
 } from '../constants/enums'
 import { formatCOP } from '../utils/formato'
 
-function BadgeEstado({ estado }) {
-  const activa = estado === 'ACTIVA'
+function BadgeSuperpuesto({ estadoPublicacion, estadoCultivo }) {
+  if (estadoPublicacion && estadoPublicacion !== 'ACTIVA') {
+    return (
+      <span className="absolute top-3 left-3 flex items-center gap-1.5 font-mono text-[11px] px-2.5 py-1 rounded-full bg-paper/90 text-ink-faint border border-line-strong backdrop-blur-xs">
+        <span className="w-1.5 h-1.5 rounded-full bg-current" />
+        Agotada
+      </span>
+    )
+  }
+
+  const enCrecimiento = estadoCultivo === 'EN_CRECIMIENTO'
   return (
     <span
-      className={`flex items-center gap-1.5 font-mono text-[11px] px-2.5 py-1 rounded-full ${
-        activa ? 'bg-ok-bg text-ok' : 'bg-line text-ink-faint'
+      className={`absolute top-3 left-3 flex items-center gap-1.5 font-mono text-[11px] px-2.5 py-1 rounded-full backdrop-blur-xs ${
+        enCrecimiento
+          ? 'bg-low-bg/90 text-low border border-low/30'
+          : 'bg-ok-bg/90 text-ok border border-ok/30'
       }`}
     >
       <span className="w-1.5 h-1.5 rounded-full bg-current" />
-      {activa ? 'Disponible' : 'Agotada'}
+      {enCrecimiento ? 'En cultivo' : 'Disponible'}
     </span>
   )
 }
@@ -31,44 +46,100 @@ function getFinca(oferta) {
 }
 
 export default function TarjetaOferta({ oferta, acciones = null }) {
+  const [errorCarga, setErrorCarga] = useState(false)
+
   const nombre =
-    oferta.producto === 'OTRO' ? oferta.productoOtro : labelProducto(oferta.producto)
+    oferta.producto === 'OTRO'
+      ? oferta.productoOtro || 'Producto agrícola'
+      : labelProducto(oferta.producto)
   const finca = getFinca(oferta)
-  return (
-    <div className="bg-card border border-line rounded-[6px] p-[18px] relative flex flex-col overflow-hidden hover:-translate-y-1 hover:shadow-md transition-all duration-200">
-<span className="absolute top-3.5 left-3.5 w-[7px] h-[7px] rounded-full bg-paper border border-line-strong" />
+  const imgSrc = imagenProducto(oferta.producto, oferta.productoOtro)
+  const esDespacho =
+    oferta.modalidadLogistica === 'DESPACHO_PRODUCTOR' ||
+    oferta.modalidadLogistica === 'AMBAS'
 
-      <div className="pl-5">
-        <p className="font-mono text-[10.5px] uppercase tracking-[0.07em] text-ink-faint mb-2">
-          {finca.municipio ? labelMunicipio(finca.municipio) : '—'} ·{' '}
-          {labelUnidadCorta(oferta.unidadMedida)}
-        </p>
-        <p className="font-display text-[19px] font-medium m-0 mb-1 leading-tight">{nombre}</p>
-        <p className="text-[13px] text-ink-soft m-0">{finca.nombre}</p>
+  const contenido = (
+    <>
+      <div className="aspect-[4/3] w-full overflow-hidden relative rounded-t-[6px] bg-ok-bg border-b border-line">
+        {!errorCarga ? (
+          <img
+            src={imgSrc}
+            alt={nombre}
+            loading="lazy"
+            onError={() => setErrorCarga(true)}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        ) : (
+          <div className="w-full h-full bg-ok-bg flex items-center justify-center text-ok">
+            <Sprout className="w-12 h-12" aria-hidden="true" />
+          </div>
+        )}
+        <BadgeSuperpuesto
+          estadoPublicacion={oferta.estadoPublicacion}
+          estadoCultivo={oferta.estadoCultivo}
+        />
       </div>
 
-      <hr className="border-none border-t border-dashed border-line-strong my-4" />
-
-      <div className="flex items-end justify-between gap-2">
-        <div className="font-mono">
-          <span className="text-[21px] font-medium text-accent-dark">
-            {formatCOP(oferta.precioUnitario)}
-          </span>
-          <span className="block text-[11px] text-ink-faint mt-0.5">
-            por {labelUnidadCorta(oferta.unidadMedida)}
-          </span>
+      <div className="p-[18px] flex flex-col flex-1 justify-between">
+        <div>
+          <p className="font-display text-[19px] font-semibold text-ink m-0 mb-1 leading-tight">
+            {nombre}
+          </p>
+          <p className="text-sm text-ink-soft m-0">
+            {finca.nombre ? `${finca.nombre} · ` : ''}
+            {finca.municipio ? labelMunicipio(finca.municipio) : '—'}
+          </p>
         </div>
-        <BadgeEstado estado={oferta.estadoPublicacion ?? 'ACTIVA'} />
-      </div>
 
-      {acciones ?? (
-        <Link
-          to={`/catalogo/${oferta.id}`}
-          className="mt-3.5 w-full py-2.5 border border-ink rounded-[4px] font-mono text-[12px] text-ink text-center no-underline block"
-        >
-          Ver detalle
-        </Link>
-      )}
-    </div>
+        <hr className="border-none border-t border-dashed border-line-strong my-3.5" />
+
+        <div className="flex items-end justify-between gap-2">
+          <div>
+            <span className="font-mono text-[21px] font-medium text-accent-dark">
+              {formatCOP(oferta.precioUnitario)}
+            </span>
+            <span className="text-sm text-ink-soft ml-1">
+              / {labelUnidadCorta(oferta.unidadMedida)}
+            </span>
+          </div>
+        </div>
+
+        {oferta.modalidadLogistica && (
+          <p className="text-sm text-ink-soft m-0 mt-2.5 flex items-center">
+            {esDespacho ? (
+              <Truck className="w-4 h-4 inline mr-1.5 text-ink-soft flex-shrink-0" aria-hidden="true" />
+            ) : (
+              <MapPin className="w-4 h-4 inline mr-1.5 text-ink-soft flex-shrink-0" aria-hidden="true" />
+            )}
+            <span className="truncate">{labelModalidad(oferta.modalidadLogistica)}</span>
+          </p>
+        )}
+
+        {acciones ? (
+          <div className="mt-3.5">{acciones}</div>
+        ) : (
+          <span className="mt-3.5 w-full py-2 border border-ink rounded-[4px] font-mono text-[12px] text-ink text-center block group-hover:bg-ink group-hover:text-paper transition-colors">
+            Ver detalle
+          </span>
+        )}
+      </div>
+    </>
+  )
+
+  if (acciones) {
+    return (
+      <div className="bg-card border border-line rounded-[6px] relative flex flex-col overflow-hidden hover:shadow-md transition-shadow group">
+        {contenido}
+      </div>
+    )
+  }
+
+  return (
+    <Link
+      to={`/catalogo/${oferta.id}`}
+      className="bg-card border border-line rounded-[6px] relative flex flex-col overflow-hidden hover:shadow-md transition-shadow group no-underline text-ink"
+    >
+      {contenido}
+    </Link>
   )
 }

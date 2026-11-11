@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { RotateCcw, Sprout } from 'lucide-react'
 
 import NavBar from '../components/NavBar'
 import TarjetaOferta from '../components/TarjetaOferta'
@@ -8,35 +10,32 @@ import {
   MODALIDADES_LOGISTICA,
   MUNICIPIOS,
   PRODUCTOS,
+  imagenProducto,
 } from '../constants/enums'
 
-function chipCls(activo) {
-  return [
-    'flex-shrink-0 font-mono text-[12px] px-3 py-1.5 border rounded-full cursor-pointer whitespace-nowrap transition-colors duration-100',
-    activo
-      ? 'bg-ink border-ink text-paper'
-      : 'bg-card border-line-strong text-ink-soft',
-  ].join(' ')
+const ESTADO_INICIAL_FILTROS = {
+  municipio: '',
+  estadoCultivo: '',
+  producto: '',
+  modalidadLogistica: '',
+  page: 0,
+  size: 20,
+  sort: 'fechaCreacion,desc',
 }
 
-const FILTROS_ESTADO = [{ valor: '', label: 'Todos' }, ...ESTADOS_CULTIVO]
-const FILTROS_PRODUCTO = [{ valor: '', label: 'Todos' }, ...PRODUCTOS]
-
 export default function CatalogoPage() {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const productoParam = searchParams.get('producto') ?? ''
+
   const [ofertas, setOfertas] = useState([])
   const [meta, setMeta] = useState(null)
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState('')
 
-  const [filtros, setFiltros] = useState({
-    municipio: '',
-    estadoCultivo: '',
-    producto: '',
-    modalidadLogistica: '',
-    page: 0,
-    size: 20,
-    sort: 'fechaCreacion,desc',
-  })
+  const [filtros, setFiltros] = useState(() => ({
+    ...ESTADO_INICIAL_FILTROS,
+    producto: productoParam,
+  }))
 
   useEffect(() => {
     let activo = true
@@ -56,7 +55,6 @@ export default function CatalogoPage() {
         }
       })
 
-    // Al limpiar (cambio de filtros): marcar como cargando para el próximo ciclo
     return () => {
       activo = false
       setCargando(true)
@@ -66,94 +64,180 @@ export default function CatalogoPage() {
 
   function cambiarFiltro(campo, valor) {
     setFiltros((prev) => ({ ...prev, [campo]: valor, page: 0 }))
+    if (campo === 'producto') {
+      const nuevosParams = new URLSearchParams(searchParams)
+      if (valor) {
+        nuevosParams.set('producto', valor)
+      } else {
+        nuevosParams.delete('producto')
+      }
+      setSearchParams(nuevosParams, { replace: true })
+    }
+  }
+
+  function limpiarFiltros() {
+    setFiltros(ESTADO_INICIAL_FILTROS)
+    if (searchParams.has('producto')) {
+      const nuevosParams = new URLSearchParams(searchParams)
+      nuevosParams.delete('producto')
+      setSearchParams(nuevosParams, { replace: true })
+    }
   }
 
   function cambiarPagina(delta) {
     setFiltros((prev) => ({ ...prev, page: prev.page + delta }))
   }
 
+  const totalOfertas = meta?.totalElements ?? ofertas.length
+  const hayFiltrosActivos = Boolean(
+    filtros.producto ||
+      filtros.municipio ||
+      filtros.estadoCultivo ||
+      filtros.modalidadLogistica,
+  )
+
   return (
     <>
       <NavBar subtitulo="catálogo" />
 
-      <div className="max-w-[1180px] mx-auto px-6 pb-16">
-        {/* Barra de stats */}
-        <div className="border-b border-line py-3 mb-0">
-          <p className="font-mono text-[12px] text-ink-faint tracking-wide">
-            {meta && !cargando
-              ? `${meta.totalElements} oferta${meta.totalElements !== 1 ? 's' : ''} disponibles`
-              : ' '}
+      {/* Banner superior panorámico */}
+      <div
+        className="h-44 sm:h-52 w-full bg-cover bg-center relative border-b border-line"
+        style={{ backgroundImage: "url('/img/fondos/catalogo.webp')" }}
+      >
+        <div className="absolute inset-0 bg-paper/85 backdrop-blur-xs flex items-center">
+          <div className="max-w-[1180px] w-full mx-auto px-6">
+            <p className="font-mono text-[11px] uppercase tracking-[0.09em] text-accent-dark m-0 mb-1.5">
+              Oriente Antioqueño · Venta directa
+            </p>
+            <h1 className="font-display text-2xl sm:text-3xl font-medium text-ink m-0 mb-2">
+              Cosechas del Oriente antioqueño
+            </h1>
+            <p className="font-mono text-[12.5px] text-ink-soft m-0">
+              {cargando
+                ? 'Consultando ofertas disponibles…'
+                : `${totalOfertas} ofertas disponibles`}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-[1180px] mx-auto px-6 pb-16 pt-6">
+        {/* Filtro visual de productos (carrusel horizontal) */}
+        <div className="mb-4">
+          <p className="font-mono text-[10.5px] uppercase tracking-wider text-ink-faint m-0 mb-2">
+            Filtrar por cosecha
           </p>
+          <div className="flex gap-3 overflow-x-auto pb-2 pt-1 no-scrollbar">
+            <button
+              type="button"
+              onClick={() => cambiarFiltro('producto', '')}
+              className={`flex items-center gap-2.5 px-3 py-2 rounded-[6px] cursor-pointer flex-shrink-0 transition-all ${
+                filtros.producto === ''
+                  ? 'border-2 border-ink bg-card shadow-xs text-ink font-medium'
+                  : 'border border-line bg-paper hover:bg-card text-ink-soft'
+              }`}
+            >
+              <span className="w-10 h-10 rounded-[4px] bg-ok-bg text-ok flex items-center justify-center flex-shrink-0">
+                <Sprout className="w-5 h-5" aria-hidden="true" />
+              </span>
+              <span className="font-mono text-[12px] whitespace-nowrap pr-1">Todos</span>
+            </button>
+
+            {PRODUCTOS.map((p) => {
+              const activo = filtros.producto === p.valor
+              return (
+                <button
+                  key={p.valor}
+                  type="button"
+                  onClick={() => cambiarFiltro('producto', p.valor)}
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-[6px] cursor-pointer flex-shrink-0 transition-all ${
+                    activo
+                      ? 'border-2 border-ink bg-card shadow-xs text-ink font-medium'
+                      : 'border border-line bg-paper hover:bg-card text-ink-soft'
+                  }`}
+                >
+                  <img
+                    src={imagenProducto(p.valor)}
+                    alt={p.label}
+                    loading="lazy"
+                    className="w-10 h-10 object-cover rounded-[4px] flex-shrink-0 bg-ok-bg"
+                  />
+                  <span className="font-mono text-[12px] whitespace-nowrap pr-1">
+                    {p.label}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
         </div>
 
-        {/* Filtros de municipio */}
-        <div className="flex gap-2 py-4 overflow-x-auto border-b border-line">
-          <button
-            onClick={() => cambiarFiltro('municipio', '')}
-            className={chipCls(filtros.municipio === '')}
-          >
-            Todos
-          </button>
-          {MUNICIPIOS.map((m) => (
-            <button
-              key={m.valor}
-              onClick={() => cambiarFiltro('municipio', m.valor)}
-              className={chipCls(filtros.municipio === m.valor)}
+        {/* Barra de filtros complementarios */}
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 py-3 border-y border-line mb-7">
+          <label className="flex items-center gap-2 font-mono text-[11.5px] text-ink-soft">
+            <span className="uppercase tracking-wider text-ink-faint text-[10.5px]">
+              Municipio:
+            </span>
+            <select
+              value={filtros.municipio}
+              onChange={(e) => cambiarFiltro('municipio', e.target.value)}
+              className="bg-card border border-line-strong rounded-[4px] px-2.5 py-1.5 font-mono text-[12px] text-ink"
             >
-              {m.label}
-            </button>
-          ))}
-        </div>
+              <option value="">Todos los municipios</option>
+              {MUNICIPIOS.map((m) => (
+                <option key={m.valor} value={m.valor}>
+                  {m.label}
+                </option>
+              ))}
+            </select>
+          </label>
 
-        {/* Filtros de producto */}
-        <div className="flex gap-2 py-3 overflow-x-auto border-b border-line">
-          <span className="font-mono text-[10.5px] uppercase tracking-wider text-ink-faint self-center mr-1 flex-shrink-0">
-            Producto:
-          </span>
-          {FILTROS_PRODUCTO.map((p) => (
-            <button
-              key={p.valor}
-              onClick={() => cambiarFiltro('producto', p.valor)}
-              className={chipCls(filtros.producto === p.valor)}
+          <label className="flex items-center gap-2 font-mono text-[11.5px] text-ink-soft">
+            <span className="uppercase tracking-wider text-ink-faint text-[10.5px]">
+              Estado:
+            </span>
+            <select
+              value={filtros.estadoCultivo}
+              onChange={(e) => cambiarFiltro('estadoCultivo', e.target.value)}
+              className="bg-card border border-line-strong rounded-[4px] px-2.5 py-1.5 font-mono text-[12px] text-ink"
             >
-              {p.label}
-            </button>
-          ))}
-        </div>
+              <option value="">Todos</option>
+              {ESTADOS_CULTIVO.map((e) => (
+                <option key={e.valor} value={e.valor}>
+                  {e.label}
+                </option>
+              ))}
+            </select>
+          </label>
 
-        {/* Filtros secundarios: estado + modalidad */}
-        <div className="flex flex-wrap gap-2 py-3 border-b border-line mb-7">
-          <span className="font-mono text-[10.5px] uppercase tracking-wider text-ink-faint self-center mr-1">
-            Estado:
-          </span>
-          {FILTROS_ESTADO.map((e) => (
-            <button
-              key={e.valor}
-              onClick={() => cambiarFiltro('estadoCultivo', e.valor)}
-              className={chipCls(filtros.estadoCultivo === e.valor)}
+          <label className="flex items-center gap-2 font-mono text-[11.5px] text-ink-soft">
+            <span className="uppercase tracking-wider text-ink-faint text-[10.5px]">
+              Modalidad:
+            </span>
+            <select
+              value={filtros.modalidadLogistica}
+              onChange={(e) => cambiarFiltro('modalidadLogistica', e.target.value)}
+              className="bg-card border border-line-strong rounded-[4px] px-2.5 py-1.5 font-mono text-[12px] text-ink"
             >
-              {e.label}
-            </button>
-          ))}
-          <span className="w-px bg-line-strong mx-1 self-stretch" />
-          <span className="font-mono text-[10.5px] uppercase tracking-wider text-ink-faint self-center mr-1">
-            Entrega:
-          </span>
-          <button
-            onClick={() => cambiarFiltro('modalidadLogistica', '')}
-            className={chipCls(filtros.modalidadLogistica === '')}
-          >
-            Todas
-          </button>
-          {MODALIDADES_LOGISTICA.map((m) => (
+              <option value="">Todas</option>
+              {MODALIDADES_LOGISTICA.map((m) => (
+                <option key={m.valor} value={m.valor}>
+                  {m.label}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          {hayFiltrosActivos && (
             <button
-              key={m.valor}
-              onClick={() => cambiarFiltro('modalidadLogistica', m.valor)}
-              className={chipCls(filtros.modalidadLogistica === m.valor)}
+              type="button"
+              onClick={limpiarFiltros}
+              className="ml-auto flex items-center gap-1.5 font-mono text-[12px] text-accent-dark hover:text-ink border border-line-strong rounded-[4px] px-3 py-1.5 bg-card cursor-pointer"
             >
-              {m.label}
+              <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
+              Limpiar filtros
             </button>
-          ))}
+          )}
         </div>
 
         {/* Estado de carga */}
@@ -173,7 +257,7 @@ export default function CatalogoPage() {
         {!cargando && !error && ofertas.length === 0 && (
           <div className="py-20 text-center">
             <p className="font-display text-[22px] text-ink-soft mb-2">
-              Sin ofertas con estos filtros
+              No hay ofertas con los filtros seleccionados
             </p>
             <p className="font-mono text-[13px] text-ink-faint">
               Prueba cambiando el municipio o el tipo de producto.
@@ -181,10 +265,10 @@ export default function CatalogoPage() {
           </div>
         )}
 
-        {/* Grid de tarjetas */}
+        {/* Grilla responsiva de tarjetas */}
         {!cargando && !error && ofertas.length > 0 && (
           <>
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {ofertas.map((o) => (
                 <TarjetaOferta key={o.id} oferta={o} />
               ))}

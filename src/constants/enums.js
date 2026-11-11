@@ -105,3 +105,54 @@ export function labelModalidad(valor) {
 export function labelEstadoCultivo(valor) {
   return ESTADOS_CULTIVO.find((e) => e.valor === valor)?.label ?? valor
 }
+
+/**
+ * Retorna la ruta a la imagen WebP optimizada del producto.
+ * Si el producto es OTRO, intenta resolver contra fotos personalizadas conocidas;
+ * en caso de valor desconocido o sin coincidencia, retorna /img/productos/otro.webp.
+ *
+ * @param {string} valor - Valor del enum Producto (ej. TOMATE_CHONTO, OTRO).
+ * @param {string} [productoOtro] - Nombre personalizado cuando valor === 'OTRO'.
+ * @returns {string} Ruta absoluta del asset en public/.
+ */
+export function imagenProducto(valor, productoOtro) {
+  if (!valor) return '/img/productos/otro.webp'
+
+  const normalizado = String(valor).trim().toUpperCase()
+
+  if (normalizado === 'OTRO') {
+    if (productoOtro && typeof productoOtro === 'string') {
+      const slug = productoOtro
+        .toLowerCase()
+        .trim()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '_')
+        .replace(/^_+|_+$/g, '')
+
+      // Lista de fotos adicionales admitidas si existen en public/img/productos/
+      const adicionales = [
+        'papa',
+        'cebolla',
+        'yuca',
+        'lulo',
+        'limon',
+        'panela',
+        'maiz',
+        'zanahoria',
+        'tomate_arbol',
+        'cafe',
+        'maracuya',
+        'pina',
+      ]
+      if (adicionales.includes(slug)) {
+        return `/img/productos/${slug}.webp`
+      }
+    }
+    return '/img/productos/otro.webp'
+  }
+
+  const archivo = normalizado.toLowerCase()
+  return `/img/productos/${archivo}.webp`
+}
+

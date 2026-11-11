@@ -49,6 +49,12 @@ body {
   margin: 0;
   border-top: 3px solid var(--color-accent);
   background-color: #F3F1E8;
+  background-image:
+    linear-gradient(rgba(243, 241, 232, 0.92), rgba(243, 241, 232, 0.92)),
+    url('/fondo.webp');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
   color: #24291F;
   font-family: 'Archivo', sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -59,7 +65,7 @@ body {
 .hero-fondo {
   background-image:
     linear-gradient(rgba(232, 237, 222, 0.82), rgba(232, 237, 222, 0.82)),
-    url('/fondo.webp');
+    url('/img/fondos/hero.webp');
   background-size: cover;
   background-position: center 35%;
 }
