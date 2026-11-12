@@ -38,7 +38,7 @@ coverage/
 .vscode/
 .idea/
 
-# Claude Code (local rules only - DO NOT COMMIT)
+# Configuración local del editor
 CLAUDE.md
 /CLAUDE.md
 _raw/
