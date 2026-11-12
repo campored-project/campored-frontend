@@ -162,7 +162,7 @@ export default function RegistroPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[calc(100vh-4rem)] flex-1">
         {/* Columna izquierda visual (solo escritorio) */}
         <div className="hidden lg:flex relative bg-[url('/img/fondos/auth.webp')] bg-cover bg-center border-r border-line">
-          <div className="w-full h-full bg-ink/60 p-12 flex flex-col justify-end text-paper">
+          <div className="w-full h-full bg-linear-to-t from-ink/85 via-ink/35 to-transparent p-12 flex flex-col justify-end text-paper">
             <p className="font-mono text-xs uppercase tracking-wider text-paper/80 m-0 mb-3">
               Únete a CampoRed
             </p>

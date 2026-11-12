@@ -54,7 +54,7 @@ export default function LandingPage() {
 
       {/* Hero a ancho completo */}
       <section className="bg-[url('/img/fondos/hero.webp')] bg-cover bg-center relative border-b border-line">
-        <div className="bg-ink/65 py-16 sm:py-24">
+        <div className="bg-linear-to-r from-ink/80 via-ink/60 to-ink/45 sm:via-ink/40 sm:to-ink/5 py-16 sm:py-24">
           <div className="max-w-[1180px] mx-auto px-6">
             <p className="font-mono uppercase tracking-wider text-xs text-paper/80 mb-4 m-0 animate-fade-up">
               Oriente Antioqueño · Comercio Agrícola Directo

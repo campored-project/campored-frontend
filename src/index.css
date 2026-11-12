@@ -50,7 +50,10 @@ body {
   border-top: 3px solid var(--color-accent);
   background-color: #F3F1E8;
   background-image:
-    linear-gradient(rgba(243, 241, 232, 0.92), rgba(243, 241, 232, 0.92)),
+    linear-gradient(
+      color-mix(in srgb, var(--color-paper) 85%, transparent),
+      color-mix(in srgb, var(--color-paper) 85%, transparent)
+    ),
     url('/fondo.webp');
   background-size: cover;
   background-position: center;

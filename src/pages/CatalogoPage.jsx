@@ -105,7 +105,7 @@ export default function CatalogoPage() {
         className="h-44 sm:h-52 w-full bg-cover bg-center relative border-b border-line"
         style={{ backgroundImage: "url('/img/fondos/catalogo.webp')" }}
       >
-        <div className="absolute inset-0 bg-paper/85 backdrop-blur-xs flex items-center">
+        <div className="absolute inset-0 bg-linear-to-r from-paper/90 via-paper/75 to-paper/40 sm:via-paper/55 sm:to-transparent flex items-center">
           <div className="max-w-[1180px] w-full mx-auto px-6">
             <p className="font-mono text-[11px] uppercase tracking-[0.09em] text-accent-dark m-0 mb-1.5">
               Oriente Antioqueño · Venta directa

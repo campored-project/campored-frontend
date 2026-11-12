@@ -93,12 +93,18 @@ export default function DetalleOfertaPage() {
     <>
       <NavBar />
       <div className="relative min-h-[calc(100vh-64px)] flex items-center justify-center">
-        <img
-          src="/ilustracion-rural.avif"
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover opacity-[0.12]"
-        />
+        {/* Fondo de la página: la foto del producto, fija y desenfocada detrás de la tarjeta */}
+        <div aria-hidden="true" className="fixed inset-0 -z-10 overflow-hidden">
+          <ImagenProducto
+            producto={oferta.producto}
+            productoOtro={oferta.productoOtro}
+            alt=""
+            loading="eager"
+            className="w-full h-full object-cover blur-sm scale-105"
+            tamanoIcono="w-24 h-24"
+          />
+          <div className="absolute inset-0 bg-paper/60" />
+        </div>
         <div className="relative w-full max-w-[600px] mx-auto px-6 py-8">
           <Link
             to="/catalogo"
@@ -107,7 +113,7 @@ export default function DetalleOfertaPage() {
             ← Catálogo
           </Link>
 
-          <div className="mt-6 bg-card/50 backdrop-blur-sm border border-line rounded-[6px] p-6 md:p-8">
+          <div className="mt-6 bg-card border border-line rounded-[6px] p-6 md:p-8">
             {/* Cabecera fotográfica del producto */}
             <div className="aspect-[4/3] sm:aspect-[16/7] w-full rounded-[6px] overflow-hidden relative mb-6 border border-line bg-ok-bg">
               <ImagenProducto
