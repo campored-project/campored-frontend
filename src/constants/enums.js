@@ -39,14 +39,30 @@ export const ROL = {
   ADMINISTRADOR: 'ADMINISTRADOR',
 }
 
+// Orden alfabético por etiqueta (US-24, catálogo de 23 productos); OTRO siempre al final
 export const PRODUCTOS = [
-  { valor: 'TOMATE_CHONTO', label: 'Tomate chonto' },
+  { valor: 'AGUACATE', label: 'Aguacate' },
+  { valor: 'ARVEJA_VERDE', label: 'Arveja verde' },
+  { valor: 'CACAO', label: 'Cacao en grano seco' },
   { valor: 'CAFE_PERGAMINO', label: 'Café pergamino' },
-  { valor: 'MORA_CASTILLA', label: 'Mora de castilla' },
+  { valor: 'CEBOLLA', label: 'Cebolla' },
   { valor: 'CILANTRO', label: 'Cilantro' },
   { valor: 'FRIJOL_CARGAMANTO', label: 'Fríjol cargamanto' },
-  { valor: 'AGUACATE', label: 'Aguacate' },
+  { valor: 'GRANADILLA', label: 'Granadilla' },
+  { valor: 'GULUPA', label: 'Gulupa' },
+  { valor: 'LIMON_TAHITI', label: 'Limón Tahití' },
+  { valor: 'LULO', label: 'Lulo' },
+  { valor: 'MARACUYA', label: 'Maracuyá' },
+  { valor: 'MORA_CASTILLA', label: 'Mora de castilla' },
+  { valor: 'PANELA', label: 'Panela' },
+  { valor: 'PAPA_CAPIRA', label: 'Papa capira' },
+  { valor: 'PIMENTON', label: 'Pimentón' },
+  { valor: 'PINA', label: 'Piña' },
   { valor: 'PLATANO', label: 'Plátano' },
+  { valor: 'TOMATE_CHONTO', label: 'Tomate chonto' },
+  { valor: 'TOMATE_ARBOL', label: 'Tomate de árbol' },
+  { valor: 'UCHUVA', label: 'Uchuva' },
+  { valor: 'YUCA', label: 'Yuca' },
   { valor: 'OTRO', label: 'Otro' },
 ]
 
@@ -106,50 +122,56 @@ export function labelEstadoCultivo(valor) {
   return ESTADOS_CULTIVO.find((e) => e.valor === valor)?.label ?? valor
 }
 
+export const RUTA_IMAGEN_OTRO = '/img/productos/otro.webp'
+
+function slugProducto(texto) {
+  return String(texto)
+    .toLowerCase()
+    .trim()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+}
+
+// Cada valor del enum tiene su foto en public/img/productos/<valor en minúsculas>.webp
+const ARCHIVO_POR_VALOR = new Map(PRODUCTOS.map((p) => [p.valor, `${p.valor.toLowerCase()}.webp`]))
+
+// Fotos que solo usan las ofertas OTRO con ese nombre (no son productos del catálogo)
+const ALIAS_OTRO = { cafe: 'cafe.webp', papa: 'papa.webp', limon: 'limon.webp' }
+
+// Lista de fotos adicionales admitidas si existen en public/img/productos/
+// Solo claves con su .webp: en Vercel una ruta inexistente devuelve index.html
+// y la tarjeta mostraría el ícono en lugar de otro.webp
+const ARCHIVO_POR_NOMBRE_OTRO = new Map([
+  ...PRODUCTOS.flatMap((p) => [
+    [slugProducto(p.label), ARCHIVO_POR_VALOR.get(p.valor)],
+    [slugProducto(p.valor), ARCHIVO_POR_VALOR.get(p.valor)],
+  ]),
+  ...Object.entries(ALIAS_OTRO),
+])
+
 /**
  * Retorna la ruta a la imagen WebP optimizada del producto.
- * Si el producto es OTRO, intenta resolver contra fotos personalizadas conocidas;
- * en caso de valor desconocido o sin coincidencia, retorna /img/productos/otro.webp.
+ * Si el producto es OTRO, busca el nombre escrito por el productor entre las etiquetas
+ * y valores del catálogo y los alias café, papa y limón; en caso de valor desconocido
+ * o sin coincidencia, retorna /img/productos/otro.webp.
  *
  * @param {string} valor - Valor del enum Producto (ej. TOMATE_CHONTO, OTRO).
  * @param {string} [productoOtro] - Nombre personalizado cuando valor === 'OTRO'.
  * @returns {string} Ruta absoluta del asset en public/.
  */
 export function imagenProducto(valor, productoOtro) {
-  if (!valor) return '/img/productos/otro.webp'
+  if (!valor) return RUTA_IMAGEN_OTRO
 
   const normalizado = String(valor).trim().toUpperCase()
 
   if (normalizado === 'OTRO') {
-    if (productoOtro && typeof productoOtro === 'string') {
-      const slug = productoOtro
-        .toLowerCase()
-        .trim()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9]+/g, '_')
-        .replace(/^_+|_+$/g, '')
-
-      // Lista de fotos adicionales admitidas si existen en public/img/productos/
-      // Solo claves con su .webp: en Vercel una ruta inexistente devuelve index.html
-      // y la tarjeta mostraría el ícono en lugar de otro.webp
-      const adicionales = [
-        'papa',
-        'cebolla',
-        'yuca',
-        'limon',
-        'cafe',
-        'maracuya',
-        'pina',
-      ]
-      if (adicionales.includes(slug)) {
-        return `/img/productos/${slug}.webp`
-      }
-    }
-    return '/img/productos/otro.webp'
+    const archivo = productoOtro ? ARCHIVO_POR_NOMBRE_OTRO.get(slugProducto(productoOtro)) : null
+    return archivo ? `/img/productos/${archivo}` : RUTA_IMAGEN_OTRO
   }
 
-  const archivo = normalizado.toLowerCase()
-  return `/img/productos/${archivo}.webp`
+  const archivo = ARCHIVO_POR_VALOR.get(normalizado)
+  return archivo ? `/img/productos/${archivo}` : RUTA_IMAGEN_OTRO
 }
 

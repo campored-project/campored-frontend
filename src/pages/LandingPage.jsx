@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom'
 import { ClipboardList, MessageCircle, Sprout } from 'lucide-react'
 
+import ImagenProducto from '../components/ImagenProducto'
 import NavBar from '../components/NavBar'
 import { useAuth } from '../context/AuthContext'
-import { MUNICIPIOS, PRODUCTOS, ROL, imagenProducto } from '../constants/enums'
+import { MUNICIPIOS, PRODUCTOS, ROL } from '../constants/enums'
 
 const PASOS = [
   {
@@ -29,7 +30,19 @@ const PASOS = [
   },
 ]
 
-const PRODUCTOS_VITRINA = PRODUCTOS.filter((p) => p.valor !== 'OTRO')
+// Vitrina de 8 destacados; el resto del catálogo se ve en /catalogo
+const DESTACADOS = [
+  'TOMATE_CHONTO',
+  'CAFE_PERGAMINO',
+  'MORA_CASTILLA',
+  'AGUACATE',
+  'PLATANO',
+  'FRIJOL_CARGAMANTO',
+  'GRANADILLA',
+  'TOMATE_ARBOL',
+]
+const PRODUCTOS_VITRINA = DESTACADOS.map((valor) => PRODUCTOS.find((p) => p.valor === valor))
+const TOTAL_PRODUCTOS = PRODUCTOS.filter((p) => p.valor !== 'OTRO').length
 
 export default function LandingPage() {
   const { usuario } = useAuth()
@@ -144,7 +157,7 @@ export default function LandingPage() {
               to="/catalogo"
               className="font-mono text-xs text-accent-dark hover:text-ink no-underline"
             >
-              Ver todo el catálogo →
+              Ver los {TOTAL_PRODUCTOS} productos →
             </Link>
           </div>
 
@@ -156,10 +169,9 @@ export default function LandingPage() {
                 className="bg-card border border-line rounded-[6px] overflow-hidden no-underline hover:border-line-strong hover:shadow-xs transition-all group"
               >
                 <div className="aspect-[4/3] w-full overflow-hidden bg-ok-bg border-b border-line">
-                  <img
-                    src={imagenProducto(producto.valor)}
+                  <ImagenProducto
+                    producto={producto.valor}
                     alt={producto.label}
-                    loading="lazy"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>

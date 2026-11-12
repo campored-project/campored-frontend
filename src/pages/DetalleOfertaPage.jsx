@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { Sprout } from 'lucide-react'
 
+import ImagenProducto from '../components/ImagenProducto'
 import NavBar from '../components/NavBar'
 import { obtenerOferta } from '../api/ofertas'
 import {
   ROL,
-  imagenProducto,
   labelEstadoCultivo,
   labelModalidad,
   labelMunicipio,
@@ -47,8 +46,6 @@ export default function DetalleOfertaPage() {
   const [oferta, setOferta] = useState(null)
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState('')
-  const [errorImagenId, setErrorImagenId] = useState(null)
-  const errorImagen = errorImagenId === id
 
   useEffect(() => {
     obtenerOferta(id)
@@ -91,7 +88,6 @@ export default function DetalleOfertaPage() {
   const productor = oferta.productor ?? {}
   const esComprador = usuario?.rol === ROL.COMPRADOR
   const tieneContacto = productor.telefonoContacto || productor.whatsappContacto
-  const imgSrc = imagenProducto(oferta.producto, oferta.productoOtro)
 
   return (
     <>
@@ -114,19 +110,13 @@ export default function DetalleOfertaPage() {
           <div className="mt-6 bg-card/50 backdrop-blur-sm border border-line rounded-[6px] p-6 md:p-8">
             {/* Cabecera fotográfica del producto */}
             <div className="aspect-[4/3] sm:aspect-[16/7] w-full rounded-[6px] overflow-hidden relative mb-6 border border-line bg-ok-bg">
-              {!errorImagen ? (
-                <img
-                  src={imgSrc}
-                  alt={nombre || 'Producto agrícola'}
-                  loading="eager"
-                  onError={() => setErrorImagenId(id)}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full bg-ok-bg flex items-center justify-center text-ok">
-                  <Sprout className="w-12 h-12" aria-hidden="true" />
-                </div>
-              )}
+              <ImagenProducto
+                producto={oferta.producto}
+                productoOtro={oferta.productoOtro}
+                alt={nombre || 'Producto agrícola'}
+                loading="eager"
+                className="w-full h-full object-cover"
+              />
               <BadgeEstado
                 estado={oferta.estadoPublicacion ?? 'ACTIVA'}
                 className="absolute top-3 left-3 backdrop-blur-xs"

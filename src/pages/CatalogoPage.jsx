@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { RotateCcw, Sprout } from 'lucide-react'
 
+import ImagenProducto from '../components/ImagenProducto'
 import NavBar from '../components/NavBar'
 import TarjetaOferta from '../components/TarjetaOferta'
 import { listarOfertas } from '../api/ofertas'
@@ -10,7 +11,6 @@ import {
   MODALIDADES_LOGISTICA,
   MUNICIPIOS,
   PRODUCTOS,
-  imagenProducto,
 } from '../constants/enums'
 
 const ESTADO_INICIAL_FILTROS = {
@@ -157,11 +157,11 @@ export default function CatalogoPage() {
                       : 'border border-line bg-paper hover:bg-card text-ink-soft'
                   }`}
                 >
-                  <img
-                    src={imagenProducto(p.valor)}
+                  <ImagenProducto
+                    producto={p.valor}
                     alt={p.label}
-                    loading="lazy"
                     className="w-10 h-10 object-cover rounded-[4px] flex-shrink-0 bg-ok-bg"
+                    tamanoIcono="w-5 h-5"
                   />
                   <span className="font-mono text-[12px] whitespace-nowrap pr-1">
                     {p.label}

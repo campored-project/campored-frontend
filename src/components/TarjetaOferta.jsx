@@ -1,9 +1,8 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { MapPin, Sprout, Truck } from 'lucide-react'
+import { MapPin, Truck } from 'lucide-react'
 
+import ImagenProducto from './ImagenProducto'
 import {
-  imagenProducto,
   labelModalidad,
   labelMunicipio,
   labelProducto,
@@ -46,14 +45,11 @@ function getFinca(oferta) {
 }
 
 export default function TarjetaOferta({ oferta, acciones = null }) {
-  const [errorCarga, setErrorCarga] = useState(false)
-
   const nombre =
     oferta.producto === 'OTRO'
       ? oferta.productoOtro || 'Producto agrícola'
       : labelProducto(oferta.producto)
   const finca = getFinca(oferta)
-  const imgSrc = imagenProducto(oferta.producto, oferta.productoOtro)
   const esDespacho =
     oferta.modalidadLogistica === 'DESPACHO_PRODUCTOR' ||
     oferta.modalidadLogistica === 'AMBAS'
@@ -61,19 +57,12 @@ export default function TarjetaOferta({ oferta, acciones = null }) {
   const contenido = (
     <>
       <div className="aspect-[4/3] w-full overflow-hidden relative rounded-t-[6px] bg-ok-bg border-b border-line">
-        {!errorCarga ? (
-          <img
-            src={imgSrc}
-            alt={nombre}
-            loading="lazy"
-            onError={() => setErrorCarga(true)}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-        ) : (
-          <div className="w-full h-full bg-ok-bg flex items-center justify-center text-ok">
-            <Sprout className="w-12 h-12" aria-hidden="true" />
-          </div>
-        )}
+        <ImagenProducto
+          producto={oferta.producto}
+          productoOtro={oferta.productoOtro}
+          alt={nombre}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        />
         <BadgeSuperpuesto
           estadoPublicacion={oferta.estadoPublicacion}
           estadoCultivo={oferta.estadoCultivo}
