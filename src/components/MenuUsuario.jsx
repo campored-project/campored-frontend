@@ -36,7 +36,7 @@ function construirResumenContexto(usuario) {
   return municipio
 }
 
-export default function MenuUsuario({ usuario, onCerrar, enlaces = [] }) {
+export default function MenuUsuario({ id, usuario, onCerrar, onEscape, enlaces = [] }) {
   const { logout } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
@@ -53,7 +53,8 @@ export default function MenuUsuario({ usuario, onCerrar, enlaces = [] }) {
   useEffect(() => {
     function handleKeyDown(e) {
       if (e.key === 'Escape') {
-        onCerrar()
+        if (onEscape) onEscape()
+        else onCerrar()
       }
     }
 
@@ -70,7 +71,7 @@ export default function MenuUsuario({ usuario, onCerrar, enlaces = [] }) {
       document.removeEventListener('keydown', handleKeyDown)
       document.removeEventListener('pointerdown', handlePointerDown)
     }
-  }, [onCerrar])
+  }, [onCerrar, onEscape])
 
   function handleLogout() {
     logout()
@@ -86,6 +87,7 @@ export default function MenuUsuario({ usuario, onCerrar, enlaces = [] }) {
   return (
     <div
       ref={menuRef}
+      id={id}
       role="menu"
       aria-orientation="vertical"
       className="absolute right-0 top-full mt-2 w-72 max-w-[calc(100vw-2rem)] bg-card border border-line rounded-[6px] shadow-lg z-50 p-2"

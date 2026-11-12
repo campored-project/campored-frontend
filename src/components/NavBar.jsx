@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { CircleUser } from 'lucide-react'
 
@@ -22,9 +22,16 @@ export default function NavBar({ subtitulo = 'mercado local' }) {
   const { usuario } = useAuth()
   const location = useLocation()
   const [menuAbierto, setMenuAbierto] = useState(false)
+  const disparadorRef = useRef(null)
 
   const cerrarMenu = useCallback(() => {
     setMenuAbierto(false)
+  }, [])
+
+  // Al cerrar con Escape el menú se desmonta: el foco vuelve al botón para no quedar en el body
+  const cerrarMenuConEscape = useCallback(() => {
+    setMenuAbierto(false)
+    disparadorRef.current?.focus()
   }, [])
 
   const enlacesRol = usuario ? ENLACES_POR_ROL[usuario.rol] || [] : []
@@ -102,10 +109,12 @@ export default function NavBar({ subtitulo = 'mercado local' }) {
             </nav>
 
             <button
+              ref={disparadorRef}
               type="button"
               data-menu-trigger="true"
               aria-expanded={menuAbierto}
               aria-haspopup="menu"
+              aria-controls={menuAbierto ? 'menu-usuario' : undefined}
               aria-label="Menú de usuario"
               onClick={() => setMenuAbierto((prev) => !prev)}
               className="p-1.5 rounded-[4px] border border-transparent hover:border-line hover:bg-card cursor-pointer bg-transparent flex items-center justify-center"
@@ -115,8 +124,10 @@ export default function NavBar({ subtitulo = 'mercado local' }) {
 
             {menuAbierto && (
               <MenuUsuario
+                id="menu-usuario"
                 usuario={usuario}
                 onCerrar={cerrarMenu}
+                onEscape={cerrarMenuConEscape}
                 enlaces={enlacesRol}
               />
             )}
