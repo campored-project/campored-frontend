@@ -36,7 +36,7 @@ npm run dev
 Agrega la variable de entorno en el dashboard de Vercel:
 
 ```
-VITE_API_BASE_URL=https://campored-backend-production.up.railway.app/api
+VITE_API_BASE_URL=https://campored-backend.onrender.com/api
 ```
 
 > **Importante:** el proxy de Vite solo aplica en desarrollo local. En producción,
@@ -56,12 +56,20 @@ VITE_API_BASE_URL=https://campored-backend-production.up.railway.app/api
 
 ```
 src/
-  api/          Módulos de comunicación con el backend (client, auth, usuarios)
-  components/   Componentes compartidos (NavBar, Campo, rutas protegidas)
-  constants/    Enums centralizados (municipios, tipos de negocio, roles)
+  api/          Módulos de comunicación con el backend (client, auth, usuarios, ofertas)
+  components/   Componentes compartidos (NavBar, MenuUsuario, ImagenProducto, TarjetaOferta, FormOferta, Campo, rutas protegidas)
+  constants/    Enums centralizados (municipios, productos y su imagen, tipos de negocio, roles)
   context/      AuthContext: sesión, token, usuario, expiración automática
-  pages/        Landing, Login, Registro, Perfil
+  pages/        Landing, Catálogo, Detalle de oferta, Login, Registro, Perfil, Mis ofertas, Nueva y Editar oferta
 ```
+
+## Imágenes de productos
+
+El catálogo tiene 23 productos (`PRODUCTOS` en `src/constants/enums.js`, en orden alfabético y con `OTRO` al final). Cada valor tiene su foto en `public/img/productos/<valor en minúsculas>.webp`, de 800×600 y máximo 100 KB.
+
+- Para mostrar la foto de un producto usa `<ImagenProducto producto={...} productoOtro={...} alt={...} />`: si la foto falla muestra `otro.webp` y, si esa también falla, un ícono del mismo tamaño.
+- En las ofertas `OTRO`, `imagenProducto()` reconoce el nombre libre cuando coincide con un producto del catálogo o con los alias `cafe`, `papa` y `limon`; lo demás usa `otro.webp`.
+- Para agregar un producto: súmalo al enum del backend, a `PRODUCTOS` y agrega su `.webp`. En Vercel una ruta de imagen inexistente devuelve `index.html`, así que no debe quedar un valor sin archivo.
 
 ## Créditos de imágenes
 - Fotografías agrícolas y de paisajes del Oriente Antioqueño obtenidas bajo licencia libre de Unsplash y Pexels.
