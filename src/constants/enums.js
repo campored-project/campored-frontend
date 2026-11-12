@@ -131,16 +131,13 @@ export function imagenProducto(valor, productoOtro) {
         .replace(/^_+|_+$/g, '')
 
       // Lista de fotos adicionales admitidas si existen en public/img/productos/
+      // Solo claves con su .webp: en Vercel una ruta inexistente devuelve index.html
+      // y la tarjeta mostraría el ícono en lugar de otro.webp
       const adicionales = [
         'papa',
         'cebolla',
         'yuca',
-        'lulo',
         'limon',
-        'panela',
-        'maiz',
-        'zanahoria',
-        'tomate_arbol',
         'cafe',
         'maracuya',
         'pina',
