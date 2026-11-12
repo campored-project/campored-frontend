@@ -7,7 +7,7 @@
  * ============================================================
  */
 
-import { useEffect, useRef } from 'react'
+import { startTransition, useEffect, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { LogOut, User } from 'lucide-react'
 
@@ -73,10 +73,15 @@ export default function MenuUsuario({ id, usuario, onCerrar, onEscape, enlaces =
     }
   }, [onCerrar, onEscape])
 
+  // React Router aplica la navegación dentro de una transición. Si la sesión se borra antes,
+  // ProtectedRoute alcanza a redirigir a /login desde la ruta protegida; en la misma
+  // transición, la nueva ruta y el cierre de sesión llegan juntos y se termina en /
   function handleLogout() {
-    logout()
     onCerrar()
     navigate('/')
+    startTransition(() => {
+      logout()
+    })
   }
 
   const esProductor = usuario?.rol === ROL.PRODUCTOR

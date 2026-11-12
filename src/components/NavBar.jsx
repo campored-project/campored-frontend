@@ -11,7 +11,7 @@ import { useAuth } from '../context/AuthContext'
 const ENLACES_POR_ROL = {
   PRODUCTOR: [
     { to: '/catalogo', label: 'Catálogo' },
-    { to: '/mis-ofertas', label: 'Mis cosechas' },
+    { to: '/mis-ofertas', label: 'Mis ofertas' },
   ],
   COMPRADOR: [
     { to: '/catalogo', label: 'Catálogo' },

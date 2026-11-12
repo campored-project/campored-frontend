@@ -13,7 +13,7 @@ import { formatCOP } from '../utils/formato'
 function BadgeSuperpuesto({ estadoPublicacion, estadoCultivo }) {
   if (estadoPublicacion && estadoPublicacion !== 'ACTIVA') {
     return (
-      <span className="absolute top-3 left-3 flex items-center gap-1.5 font-mono text-[11px] px-2.5 py-1 rounded-full bg-paper/90 text-ink-faint border border-line-strong backdrop-blur-xs">
+      <span className="absolute top-3 left-3 flex items-center gap-1.5 font-mono text-[11px] px-2.5 py-1 rounded-full bg-paper/90 text-ink-soft border border-line-strong backdrop-blur-xs">
         <span className="w-1.5 h-1.5 rounded-full bg-current" />
         Agotada
       </span>

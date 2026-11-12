@@ -61,9 +61,9 @@ export default function DetalleOfertaPage() {
   if (cargando) {
     return (
       <>
-        <NavBar />
+        <NavBar subtitulo="detalle de oferta" />
         <div className="max-w-[800px] mx-auto px-6 py-20 text-center">
-          <p className="font-mono text-[13px] text-ink-faint">Cargando oferta…</p>
+          <p className="font-mono text-[13px] text-ink-soft">Cargando oferta…</p>
         </div>
       </>
     )
@@ -72,7 +72,7 @@ export default function DetalleOfertaPage() {
   if (error) {
     return (
       <>
-        <NavBar />
+        <NavBar subtitulo="detalle de oferta" />
         <div className="max-w-[800px] mx-auto px-6 py-20 text-center">
           <p className="font-display text-[22px] text-ink-soft mb-4">{error}</p>
           <Link to="/catalogo" className="font-mono text-[13px] text-accent-dark no-underline">
@@ -91,7 +91,7 @@ export default function DetalleOfertaPage() {
 
   return (
     <>
-      <NavBar />
+      <NavBar subtitulo="detalle de oferta" />
       <div className="relative min-h-[calc(100vh-64px)] flex items-center justify-center">
         {/* Fondo de la página: la foto del producto, fija y desenfocada detrás de la tarjeta */}
         <div aria-hidden="true" className="fixed inset-0 -z-10 overflow-hidden">
@@ -108,7 +108,7 @@ export default function DetalleOfertaPage() {
         <div className="relative w-full max-w-[600px] mx-auto px-6 py-8">
           <Link
             to="/catalogo"
-            className="font-mono text-[12px] text-ink-faint no-underline"
+            className="inline-block font-mono text-[12px] text-ink-soft no-underline bg-paper/80 rounded-[4px] px-2 py-1"
           >
             ← Catálogo
           </Link>
@@ -122,10 +122,6 @@ export default function DetalleOfertaPage() {
                 alt={nombre || 'Producto agrícola'}
                 loading="eager"
                 className="w-full h-full object-cover"
-              />
-              <BadgeEstado
-                estado={oferta.estadoPublicacion ?? 'ACTIVA'}
-                className="absolute top-3 left-3 backdrop-blur-xs"
               />
             </div>
 

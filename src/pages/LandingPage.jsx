@@ -95,7 +95,7 @@ export default function LandingPage() {
                     to={esProductor ? '/mis-ofertas' : '/perfil'}
                     className="bg-ink/40 text-paper border border-paper/40 rounded-[4px] px-5 py-3 font-mono text-xs sm:text-[13px] no-underline hover:bg-ink/70 hover:border-paper transition-colors"
                   >
-                    {esProductor ? 'Mis cosechas' : 'Mi perfil'}
+                    {esProductor ? 'Mis ofertas' : 'Mi perfil'}
                   </Link>
                 </>
               )}

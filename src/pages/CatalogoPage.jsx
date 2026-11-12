@@ -55,6 +55,7 @@ export default function CatalogoPage() {
         }
       })
 
+    // Al limpiar (cambio de filtros): marcar como cargando para el próximo ciclo
     return () => {
       activo = false
       setCargando(true)
@@ -102,8 +103,7 @@ export default function CatalogoPage() {
 
       {/* Banner superior panorámico */}
       <div
-        className="h-44 sm:h-52 w-full bg-cover bg-center relative border-b border-line"
-        style={{ backgroundImage: "url('/img/fondos/catalogo.webp')" }}
+        className="h-44 sm:h-52 w-full bg-[url('/img/fondos/catalogo.webp')] bg-cover bg-center relative border-b border-line"
       >
         <div className="absolute inset-0 bg-linear-to-r from-paper/90 via-paper/75 to-paper/40 sm:via-paper/55 sm:to-transparent flex items-center">
           <div className="max-w-[1180px] w-full mx-auto px-6">
@@ -116,7 +116,7 @@ export default function CatalogoPage() {
             <p className="font-mono text-[12.5px] text-ink-soft m-0">
               {cargando
                 ? 'Consultando ofertas disponibles…'
-                : `${totalOfertas} ofertas disponibles`}
+                : `${totalOfertas} ${totalOfertas === 1 ? 'oferta disponible' : 'ofertas disponibles'}`}
             </p>
           </div>
         </div>
@@ -125,7 +125,7 @@ export default function CatalogoPage() {
       <div className="max-w-[1180px] mx-auto px-6 pb-16 pt-6">
         {/* Filtro visual de productos (carrusel horizontal) */}
         <div className="mb-4">
-          <p className="font-mono text-[10.5px] uppercase tracking-wider text-ink-faint m-0 mb-2">
+          <p className="font-mono text-[10.5px] uppercase tracking-wider text-ink-soft m-0 mb-2">
             Filtrar por cosecha
           </p>
           <div className="flex gap-3 overflow-x-auto pb-2 pt-1 no-scrollbar">
@@ -175,7 +175,7 @@ export default function CatalogoPage() {
         {/* Barra de filtros complementarios */}
         <div className="flex flex-wrap items-center gap-2 sm:gap-3 py-3 border-y border-line mb-7">
           <label className="flex items-center gap-2 font-mono text-[11.5px] text-ink-soft">
-            <span className="uppercase tracking-wider text-ink-faint text-[10.5px]">
+            <span className="uppercase tracking-wider text-ink-soft text-[10.5px]">
               Municipio:
             </span>
             <select
@@ -193,7 +193,7 @@ export default function CatalogoPage() {
           </label>
 
           <label className="flex items-center gap-2 font-mono text-[11.5px] text-ink-soft">
-            <span className="uppercase tracking-wider text-ink-faint text-[10.5px]">
+            <span className="uppercase tracking-wider text-ink-soft text-[10.5px]">
               Estado:
             </span>
             <select
@@ -211,7 +211,7 @@ export default function CatalogoPage() {
           </label>
 
           <label className="flex items-center gap-2 font-mono text-[11.5px] text-ink-soft">
-            <span className="uppercase tracking-wider text-ink-faint text-[10.5px]">
+            <span className="uppercase tracking-wider text-ink-soft text-[10.5px]">
               Modalidad:
             </span>
             <select
@@ -242,7 +242,7 @@ export default function CatalogoPage() {
 
         {/* Estado de carga */}
         {cargando && (
-          <p className="font-mono text-[13px] text-ink-faint py-16 text-center">
+          <p className="font-mono text-[13px] text-ink-soft py-16 text-center">
             Cargando ofertas…
           </p>
         )}
@@ -257,9 +257,9 @@ export default function CatalogoPage() {
         {!cargando && !error && ofertas.length === 0 && (
           <div className="py-20 text-center">
             <p className="font-display text-[22px] text-ink-soft mb-2">
-              No hay ofertas con los filtros seleccionados
+              No hay ofertas disponibles con estos filtros. Intenta ampliar tu búsqueda.
             </p>
-            <p className="font-mono text-[13px] text-ink-faint">
+            <p className="font-mono text-[13px] text-ink-soft">
               Prueba cambiando el municipio o el tipo de producto.
             </p>
           </div>
@@ -284,7 +284,7 @@ export default function CatalogoPage() {
                 >
                   ← Anterior
                 </button>
-                <span className="text-ink-faint">
+                <span className="text-ink-soft">
                   Página {meta.number + 1} de {meta.totalPages}
                 </span>
                 <button
