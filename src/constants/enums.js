@@ -161,6 +161,24 @@ const ARCHIVO_POR_NOMBRE_OTRO = new Map([
  * @param {string} [productoOtro] - Nombre personalizado cuando valor === 'OTRO'.
  * @returns {string} Ruta absoluta del asset en public/.
  */
+export const JORNADA = [
+  { valor: 'MANANA', label: 'Mañana' },
+  { valor: 'TARDE', label: 'Tarde' },
+]
+
+export const CANAL_CONTACTO = [
+  { valor: 'WHATSAPP', label: 'WhatsApp' },
+  { valor: 'LLAMADA', label: 'Llamada' },
+]
+
+export function labelJornada(valor) {
+  return JORNADA.find((j) => j.valor === valor)?.label ?? valor
+}
+
+export function labelCanal(valor) {
+  return CANAL_CONTACTO.find((c) => c.valor === valor)?.label ?? valor
+}
+
 export function imagenProducto(valor, productoOtro) {
   if (!valor) return RUTA_IMAGEN_OTRO
 

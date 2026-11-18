@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 
 import ImagenProducto from '../components/ImagenProducto'
 import NavBar from '../components/NavBar'
+import { registrarContacto } from '../api/contactos'
 import { obtenerOferta } from '../api/ofertas'
 import {
   ROL,
@@ -38,6 +39,11 @@ function Dato({ label, valor }) {
       <p className="font-body text-[14px] text-ink m-0">{valor}</p>
     </div>
   )
+}
+
+function abrirYRegistrar(href, canal, ofertaId) {
+  window.open(href, '_blank', 'noopener,noreferrer')
+  registrarContacto({ ofertaId, canal }).catch(() => {})
 }
 
 export default function DetalleOfertaPage() {
@@ -88,12 +94,12 @@ export default function DetalleOfertaPage() {
   const productor = oferta.productor ?? {}
   const esComprador = usuario?.rol === ROL.COMPRADOR
   const tieneContacto = productor.telefonoContacto || productor.whatsappContacto
+  const estaActiva = oferta.estadoPublicacion !== 'AGOTADA'
 
   return (
     <>
       <NavBar subtitulo="detalle de oferta" />
       <div className="relative min-h-[calc(100vh-64px)] flex items-center justify-center">
-        {/* Fondo de la página: la foto del producto, fija y desenfocada detrás de la tarjeta */}
         <div aria-hidden="true" className="fixed inset-0 -z-10 overflow-hidden">
           <ImagenProducto
             producto={oferta.producto}
@@ -114,7 +120,6 @@ export default function DetalleOfertaPage() {
           </Link>
 
           <div className="mt-6 bg-card border border-line rounded-[6px] p-6 md:p-8">
-            {/* Cabecera fotográfica del producto */}
             <div className="aspect-[4/3] sm:aspect-[16/7] w-full rounded-[6px] overflow-hidden relative mb-6 border border-line bg-ok-bg">
               <ImagenProducto
                 producto={oferta.producto}
@@ -125,7 +130,6 @@ export default function DetalleOfertaPage() {
               />
             </div>
 
-            {/* Encabezado */}
             <div className="flex items-start justify-between gap-4 flex-wrap mb-4">
               <div>
                 <p className="font-mono text-[10.5px] uppercase tracking-[0.07em] text-ink-faint mb-2">
@@ -145,7 +149,6 @@ export default function DetalleOfertaPage() {
 
             <hr className="border-none border-t border-dashed border-line-strong my-6" />
 
-            {/* Datos de la oferta */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-4">
               <Dato
                 label="Precio"
@@ -167,9 +170,21 @@ export default function DetalleOfertaPage() {
               )}
             </div>
 
+            {/* CTA: hacer pedido */}
+            {esComprador && estaActiva && (
+              <>
+                <hr className="border-none border-t border-dashed border-line-strong my-6" />
+                <Link
+                  to={`/ofertas/${id}/checkout`}
+                  className="flex items-center justify-center w-full bg-ink text-paper border border-ink rounded-[4px] py-3 font-mono text-[13px] no-underline hover:opacity-90 transition-opacity"
+                >
+                  Hacer pedido
+                </Link>
+              </>
+            )}
+
             <hr className="border-none border-t border-dashed border-line-strong my-6" />
 
-            {/* Sección de contacto */}
             <p className="font-mono text-[10.5px] uppercase tracking-[0.07em] text-ink-faint mb-4">
               Contactar productor
             </p>
@@ -203,24 +218,32 @@ export default function DetalleOfertaPage() {
                   <p className="font-display text-[17px] m-0 mb-2">{productor.nombreCompleto}</p>
                 )}
                 {productor.whatsappDisponible && productor.whatsappContacto && (
-                  <a
-                    href={`https://wa.me/${productor.whatsappContacto.replace('+', '')}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center justify-between gap-6 border border-ok bg-ok-bg rounded-[6px] px-4 py-3 no-underline group"
+                  <button
+                    type="button"
+                    onClick={() =>
+                      abrirYRegistrar(
+                        `https://wa.me/${productor.whatsappContacto.replace('+', '')}`,
+                        'WHATSAPP',
+                        id,
+                      )
+                    }
+                    className="flex items-center justify-between gap-6 border border-ok bg-ok-bg rounded-[6px] px-4 py-3 cursor-pointer w-full text-left"
                   >
                     <span className="font-mono text-[12px] text-ok uppercase tracking-wider">WhatsApp</span>
                     <span className="font-mono text-[14px] text-ink">{productor.whatsappContacto}</span>
-                  </a>
+                  </button>
                 )}
                 {productor.llamadaDisponible && productor.telefonoContacto && (
-                  <a
-                    href={`tel:${productor.telefonoContacto}`}
-                    className="flex items-center justify-between gap-6 border border-line-strong bg-card rounded-[6px] px-4 py-3 no-underline"
+                  <button
+                    type="button"
+                    onClick={() =>
+                      abrirYRegistrar(`tel:${productor.telefonoContacto}`, 'LLAMADA', id)
+                    }
+                    className="flex items-center justify-between gap-6 border border-line-strong bg-card rounded-[6px] px-4 py-3 cursor-pointer w-full text-left"
                   >
                     <span className="font-mono text-[12px] text-ink-faint uppercase tracking-wider">Llamar</span>
                     <span className="font-mono text-[14px] text-ink">{productor.telefonoContacto}</span>
-                  </a>
+                  </button>
                 )}
               </div>
             )}

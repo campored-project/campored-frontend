@@ -6,15 +6,15 @@ import MenuUsuario from './MenuUsuario'
 import { ROL } from '../constants/enums'
 import { useAuth } from '../context/AuthContext'
 
-// Enlaces de navegación según el rol del usuario autenticado
-// Roller: aquí puedes agregar 'Panel' (/panel) y 'Mis contactos' (/mis-contactos) directamente
 const ENLACES_POR_ROL = {
   PRODUCTOR: [
     { to: '/catalogo', label: 'Catálogo' },
     { to: '/mis-ofertas', label: 'Mis ofertas' },
+    { to: '/pedidos/recibidos', label: 'Pedidos' },
   ],
   COMPRADOR: [
     { to: '/catalogo', label: 'Catálogo' },
+    { to: '/mis-contactos', label: 'Mis contactos' },
   ],
 }
 

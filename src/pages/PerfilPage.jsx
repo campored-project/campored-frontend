@@ -38,13 +38,13 @@ function computarDiffComprador(form, usuario) {
 function validarDiffProductor(diff, formCompleto) {
   const e = {}
   if ('telefono' in diff && diff.telefono !== '' && !TELEFONO_PERFIL_RE.test(diff.telefono))
-    e.telefono = 'Ej: +573001234567 (10–13 dígitos).'
+    e.telefono = 'El teléfono debe tener entre 10 y 13 dígitos'
   if ('whatsapp' in diff && diff.whatsapp !== '' && !TELEFONO_PERFIL_RE.test(diff.whatsapp))
-    e.whatsapp = 'Ej: +573001234567 (10–13 dígitos).'
+    e.whatsapp = 'El WhatsApp debe tener entre 10 y 13 dígitos'
   if (formCompleto.canalWhatsappHabilitado && !formCompleto.whatsapp)
-    e.whatsapp = 'Ingresa un número de WhatsApp para habilitar este canal.'
+    e.whatsapp = 'Debes ingresar un número de WhatsApp para habilitar este canal.'
   if (formCompleto.canalLlamadaHabilitado && !formCompleto.telefono)
-    e.telefono = 'Ingresa un teléfono para habilitar este canal.'
+    e.telefono = 'Debes ingresar un número de teléfono para habilitar este canal.'
   return e
 }
 
@@ -237,6 +237,14 @@ function FormProductor({ usuario, onGuardar, onError401 }) {
             label="Habilitar WhatsApp (requiere WhatsApp)"
           />
         </div>
+
+        {!form.canalWhatsappHabilitado && !form.canalLlamadaHabilitado && (
+          <div role="status" aria-live="polite" className="border border-low/30 bg-low-bg rounded-[6px] px-4 py-3">
+            <p className="text-[13.5px] text-low m-0">
+              Los compradores no podrán contactarte hasta que actives al menos un canal.
+            </p>
+          </div>
+        )}
 
         {errorGeneral && (
           <div role="alert" aria-live="polite" className="text-low text-[13.5px]">

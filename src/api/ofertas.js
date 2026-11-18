@@ -28,3 +28,7 @@ export function listarOfertas(params = {}) {
 export function obtenerOferta(id) {
   return client.get(`/ofertas/${id}`, true)
 }
+
+export function eliminarOferta(id) {
+  return client.delete(`/ofertas/${id}`)
+}

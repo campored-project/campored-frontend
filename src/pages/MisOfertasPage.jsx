@@ -3,7 +3,7 @@ import { Link, Navigate } from 'react-router-dom'
 
 import NavBar from '../components/NavBar'
 import ModalConfirmacion from '../components/ModalConfirmacion'
-import { marcarAgotada, misOfertas } from '../api/ofertas'
+import { eliminarOferta, marcarAgotada, misOfertas } from '../api/ofertas'
 import {
   ROL,
   labelMunicipio,
@@ -24,7 +24,7 @@ function StatCard({ label, valor }) {
   )
 }
 
-function FilaOferta({ oferta, onMarcarAgotada }) {
+function FilaOferta({ oferta, onMarcarAgotada, onEliminar }) {
   const nombre =
     oferta.producto === 'OTRO' ? oferta.productoOtro : labelProducto(oferta.producto)
   const activa = oferta.estadoPublicacion === 'ACTIVA'
@@ -75,6 +75,14 @@ function FilaOferta({ oferta, onMarcarAgotada }) {
             </button>
           </>
         )}
+        <button
+          type="button"
+          title="Eliminar oferta"
+          onClick={onEliminar}
+          className="border border-low/40 rounded-[4px] w-8 h-8 flex items-center justify-center text-low cursor-pointer text-[13px] hover:bg-low-bg transition-colors"
+        >
+          🗑
+        </button>
       </div>
     </div>
   )
@@ -88,8 +96,10 @@ export default function MisOfertasPage() {
   const [pendienteAgotada, setPendienteAgotada] = useState(null)
   const [marcando, setMarcando] = useState(false)
   const [errorModal, setErrorModal] = useState('')
+  const [pendienteEliminar, setPendienteEliminar] = useState(null)
+  const [eliminando, setEliminando] = useState(false)
+  const [errorEliminar, setErrorEliminar] = useState('')
 
-  // Todos los hooks antes de cualquier return condicional
   useEffect(() => {
     if (usuario?.rol !== ROL.PRODUCTOR) return
     misOfertas()
@@ -114,25 +124,42 @@ export default function MisOfertasPage() {
     }
   }
 
+  async function confirmarEliminar() {
+    setEliminando(true)
+    setErrorEliminar('')
+    try {
+      await eliminarOferta(pendienteEliminar.id)
+      setOfertas((prev) => prev.filter((o) => o.id !== pendienteEliminar.id))
+      setPendienteEliminar(null)
+    } catch (err) {
+      setErrorEliminar(err.message)
+    } finally {
+      setEliminando(false)
+    }
+  }
+
   const activas = ofertas.filter((o) => o.estadoPublicacion === 'ACTIVA').length
 
-  const nombrePendiente =
+  const nombrePendienteAgotada =
     pendienteAgotada?.producto === 'OTRO'
       ? pendienteAgotada.productoOtro
       : labelProducto(pendienteAgotada?.producto ?? '')
+
+  const nombrePendienteEliminar =
+    pendienteEliminar?.producto === 'OTRO'
+      ? pendienteEliminar.productoOtro
+      : labelProducto(pendienteEliminar?.producto ?? '')
 
   return (
     <>
       <NavBar subtitulo="panel del productor" />
       <div className="max-w-[980px] mx-auto px-6 pb-16">
-        {/* Stats */}
         <div className="grid grid-cols-3 gap-3 py-6">
           <StatCard label="Publicadas" valor={ofertas.length} />
           <StatCard label="Activas" valor={activas} />
           <StatCard label="Agotadas" valor={ofertas.length - activas} />
         </div>
 
-        {/* Header sección */}
         <div className="flex items-center justify-between mb-5">
           <h2 className="font-display text-[20px] font-medium m-0">Mis ofertas</h2>
           <Link
@@ -182,6 +209,10 @@ export default function MisOfertasPage() {
                   setErrorModal('')
                   setPendienteAgotada(o)
                 }}
+                onEliminar={() => {
+                  setErrorEliminar('')
+                  setPendienteEliminar(o)
+                }}
               />
             ))}
           </div>
@@ -191,12 +222,24 @@ export default function MisOfertasPage() {
       {pendienteAgotada && (
         <ModalConfirmacion
           titulo="Marcar como agotada"
-          mensaje={`¿Confirmas que "${nombrePendiente}" está agotada? Esta acción no se puede revertir.${errorModal ? `\n\nError: ${errorModal}` : ''}`}
+          mensaje={`¿Confirmas que "${nombrePendienteAgotada}" está agotada? Esta acción no se puede revertir.${errorModal ? `\n\nError: ${errorModal}` : ''}`}
           etiquetaConfirmar="Sí, marcar agotada"
           etiquetaCancelar="Cancelar"
           cargando={marcando}
           onConfirmar={confirmarAgotada}
           onCancelar={() => setPendienteAgotada(null)}
+        />
+      )}
+
+      {pendienteEliminar && (
+        <ModalConfirmacion
+          titulo="Eliminar oferta"
+          mensaje={`¿Estás seguro de que quieres eliminar "${nombrePendienteEliminar}"? Esta acción es irreversible y no se puede deshacer.${errorEliminar ? `\n\nError: ${errorEliminar}` : ''}`}
+          etiquetaConfirmar="Sí, eliminar"
+          etiquetaCancelar="Cancelar"
+          cargando={eliminando}
+          onConfirmar={confirmarEliminar}
+          onCancelar={() => setPendienteEliminar(null)}
         />
       )}
     </>

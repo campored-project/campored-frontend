@@ -61,4 +61,5 @@ export const client = {
   postAuth: (path, body) => request(path, { method: 'POST', body, auth: true }),
   put: (path, body) => request(path, { method: 'PUT', body, auth: true }),
   patch: (path, body) => request(path, { method: 'PATCH', body, auth: true }),
+  delete: (path) => request(path, { method: 'DELETE', auth: true }),
 }
